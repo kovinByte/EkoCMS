@@ -5,8 +5,6 @@
 /script
 /.screenshots
 /.trae-html-share-packages
-/data/*.db
-/data/*.db-*
 tests/tmp_*
 
 ###############
