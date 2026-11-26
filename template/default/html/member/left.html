@@ -1,0 +1,27 @@
+<aside class="shrink-0 lg:w-56">
+	<div class="rounded-lg border border-gray-100 bg-white p-2 shadow-sm">
+		<nav class="member-nav flex gap-1 overflow-x-auto lg:flex-col" aria-label="会员导航">
+			<a href="{eko:ucenter}" class="member-link inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-blue-50 hover:text-blue-600">
+				<i class="fa-regular fa-user"></i> 账号信息
+			</a>
+			<a href="{eko:mycommentpage}" class="member-link inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-blue-50 hover:text-blue-600">
+				<i class="fa-regular fa-comment-dots"></i> 我的评论
+			</a>
+			<a href="{eko:logout}" class="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-sm px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600">
+				<i class="fa-solid fa-arrow-right-from-bracket"></i> 退出登录
+			</a>
+		</nav>
+	</div>
+</aside>
+
+<script>
+$(function () {
+	var current = window.location.href;
+	$('.member-link').each(function () {
+		var href = $(this).attr('href');
+		if (href && current.indexOf(href.split('?')[0]) === 0) {
+			$(this).addClass('bg-blue-50 text-blue-600');
+		}
+	});
+});
+</script>

@@ -1,0 +1,43 @@
+{include file=comm/head.html}
+
+{include file=comm/top.html}
+
+<div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+	<div class="space-y-5">
+		{eko:list num=10 order=date scode=* page=1}
+		<a href="[list:link]" class="group flex flex-col gap-5 rounded-lg border border-gray-100 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md sm:flex-row">
+			{eko:if('[list:ico]'!='')}
+			<div class="h-40 w-full shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-32 sm:w-48">
+				<img src="[list:ico]" alt="[list:title]" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+			</div>
+			{/eko:if}
+			<div class="min-w-0 flex-1">
+				<div class="flex flex-wrap items-center gap-2">
+					{eko:if([list:istop]==1)}
+					<span class="rounded-sm bg-red-600 px-2 py-0.5 text-xs font-medium text-white">置顶</span>
+					{/eko:if}
+					{eko:if([list:isrecommend]==1)}
+					<span class="rounded-sm bg-blue-600 px-2 py-0.5 text-xs font-medium text-white">推荐</span>
+					{/eko:if}
+					{eko:if([list:isheadline]==1)}
+					<span class="rounded-sm bg-cyan-600 px-2 py-0.5 text-xs font-medium text-white">头条</span>
+					{/eko:if}
+				</div>
+				<h2 class="mt-2 text-lg font-semibold text-gray-900 transition group-hover:text-blue-600">
+					<span class="hidden md:inline">[list:title lencn=30]</span>
+					<span class="md:hidden">[list:title lencn=20]</span>
+				</h2>
+				<p class="mt-2 line-clamp-2 text-sm leading-6 text-gray-500">[list:content drophtml=1 dropblank=1 len=90]</p>
+				<div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-400">
+					<span class="inline-flex items-center gap-1"><i class="fa-regular fa-clock"></i> [list:date style=Y-m-d]</span>
+					<span class="ml-auto inline-flex items-center gap-1 font-medium text-blue-600">阅读全文 <i class="fa-solid fa-arrow-right text-xs"></i></span>
+				</div>
+			</div>
+		</a>
+		{/eko:list}
+	</div>
+
+	{include file=comm/page.html}
+</div>
+
+{include file=comm/foot.html}

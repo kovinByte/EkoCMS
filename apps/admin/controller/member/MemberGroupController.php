@@ -1,0 +1,186 @@
+<?php
+/**
+ *  会员等级控制器
+ */
+namespace app\admin\controller\member;
+
+use core\basic\Controller;
+use app\admin\model\member\MemberGroupModel;
+
+class MemberGroupController extends Controller
+{
+
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = new MemberGroupModel();
+    }
+
+    // 会员等级列表
+    public function index()
+    {
+        if ((! ! $id = get('id', 'int')) && $result = $this->model->getGroup($id)) {
+            $this->assign('more', true);
+            $this->assign('group', $result);
+        } else {
+            $this->assign('list', true);
+            if (! ! ($field = get('field', 'var')) && ! ! ($keyword = get('keyword', 'vars'))) {
+                $result = $this->model->findGroup($field, $keyword);
+            } else {
+                $result = $this->model->getList();
+            }
+            $this->assign('groups', $result);
+        }
+        $this->display('member/group.html');
+    }
+
+    // 会员等级增加
+    public function add()
+    {
+        if ($_POST) {
+            
+            // 获取数据
+            $gcode = post('gcode', 'int') ?: get_auto_code($this->model->getLastGid(), 1);
+            $gname = post('gname');
+            $description = post('description');
+            $status = post('status') ?: 1;
+            $lscore = post('lscore', 'int') ?: 0;
+            $uscore = post('uscore', 'int') ?: 9999999999;
+            
+            if (! $gcode) {
+                alert_back('等级编号不能为空！');
+            }
+            
+            if (! $gname) {
+                alert_back('等级名称不能为空！');
+            }
+            
+            if ($this->model->findGroupCode($gcode)) {
+                alert_back('等级编码不能重复！');
+            }
+            
+            // 构建数据
+            $data = array(
+                'gcode' => $gcode,
+                'gname' => $gname,
+                'description' => $description,
+                'status' => $status,
+                'lscore' => $lscore,
+                'uscore' => $uscore,
+                'create_user' => session('username'),
+                'update_user' => session('username')
+            );
+            
+            // 执行会员等级添加
+            $groupBack = admin_back_target(url('/admin/MemberGroup/index'));
+            if ($this->model->addGroup($data)) {
+                $this->log('新增会员等级成功！');
+                success('新增成功！', $groupBack);
+            } else {
+                $this->log('新增会员等级失败！');
+                alert_back('新增失败！');
+            }
+        }
+    }
+
+    // 会员等级删除
+    public function del()
+    {
+        $back = admin_stay_target(url('/admin/MemberGroup/index'));
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error('请使用正确方式提交！', url('/admin/MemberGroup/index'));
+        }
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', url('/admin/MemberGroup/index'));
+        }
+        
+        if ($this->model->findGroupUser($id)) {
+            error('会员等级下存在用户，无法直接删除！', url('/admin/MemberGroup/index'));
+        }
+        
+        if ($this->model->delGroup($id)) {
+            $this->log('删除会员等级' . $id . '成功！');
+            success('删除成功！', url('/admin/MemberGroup/index'));
+        } else {
+            $this->log('删除会员等级' . $id . '失败！');
+            error('删除失败！', url('/admin/MemberGroup/index'));
+        }
+    }
+
+    // 会员等级修改
+    public function mod()
+    {
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', url('/admin/MemberGroup/index'));
+        }
+        
+        // 单独修改状态
+        $posted = admin_posted_field(array('status'), url('/admin/MemberGroup/index'));
+        if ($posted) {
+            if (! $this->model->getGroup($id)) {
+                error('编辑的内容已经不存在！', url('/admin/MemberGroup/index'));
+            }
+            if (admin_saved($this->model->modGroup($id, $posted[0] . "='" . $posted[1] . "',update_user='" . session('username') . "'"), true)) {
+                success('修改成功！', url('/admin/MemberGroup/index'));
+            } else {
+                error('修改失败！', url('/admin/MemberGroup/index'));
+            }
+        }
+        
+        // 修改操作
+        if ($_POST) {
+            
+            // 获取数据
+            $gcode = post('gcode', 'int') ?: get_auto_code($this->model->getLastGid(), 1);
+            $gname = post('gname');
+            $description = post('description');
+            $status = post('status') ?: 1;
+            $lscore = post('lscore', 'int') ?: 0;
+            $uscore = post('uscore', 'int') ?: 9999999999;
+            
+            if (! $gcode) {
+                alert_back('等级编号不能为空！');
+            }
+            
+            if (! $gname) {
+                alert_back('等级名称不能为空！');
+            }
+            
+            if ($this->model->findGroupCode($gcode, $id)) {
+                alert_back('等级编码不能重复！');
+            }
+            
+            // 构建数据
+            $data = array(
+                'gcode' => $gcode,
+                'gname' => $gname,
+                'description' => $description,
+                'status' => $status,
+                'lscore' => $lscore,
+                'uscore' => $uscore,
+                'update_user' => session('username')
+            );
+            
+            // 执行会员等级修改
+            if (! $this->model->getGroup($id)) {
+                error('编辑的内容已经不存在！', url('/admin/MemberGroup/index'));
+            }
+            if ($this->model->modGroup($id, $data)) {
+                $this->log('修改会员等级成功！');
+                success('修改成功！', admin_back_target(url('/admin/MemberGroup/index')));
+            } else {
+                success('修改成功！', url('/admin/MemberGroup/index'));
+            }
+        } else {
+            // 调取修改内容
+            $this->assign('mod', true);
+            if (! $result = $this->model->getGroup($id)) {
+                error('编辑的内容已经不存在！', url('/admin/MemberGroup/index'));
+            }
+            
+            $this->assign('group', $result);
+            $this->display('member/group.html');
+        }
+    }
+}

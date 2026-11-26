@@ -1,0 +1,225 @@
+/* ==========================================================================
+   后台登录页样式（仅视觉层，不涉及业务逻辑）
+   ========================================================================== */
+
+body,
+html {
+	height: 100%;
+}
+
+body {
+	background: #0f172a url(../images/bg.jpg) center center / cover no-repeat fixed;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景蒙层，让登录卡片更突出 */
+body::before {
+	content: "";
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(135deg, rgba(9, 20, 38, .92) 0%, rgba(13, 42, 84, .78) 45%, rgba(22, 119, 255, .55) 100%);
+}
+
+.user-login {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	left: 0;
+	top: 0;
+	min-height: 100%;
+	padding: 40px 20px 90px;
+	box-sizing: border-box;
+}
+
+/* 登录卡片 */
+.user-login-main {
+	width: 400px;
+	max-width: 100%;
+	box-sizing: border-box;
+	background: rgba(255, 255, 255, .10);
+	border: 1px solid rgba(255, 255, 255, .22);
+	border-radius: 18px;
+	box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .55);
+	-webkit-backdrop-filter: blur(18px);
+	backdrop-filter: blur(18px);
+	overflow: hidden;
+}
+
+.user-login-header {
+	padding: 32px 24px 6px;
+	text-align: center;
+}
+
+.user-login-header h2 {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-bottom: 8px;
+	color: #fff;
+	font-size: 22px;
+	font-weight: 600;
+	letter-spacing: .3px;
+}
+
+.user-login-header h2 img {
+	height: 36px;
+	filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .25));
+}
+
+.user-login-header p {
+	color: rgba(255, 255, 255, .75);
+	font-size: 13px;
+	letter-spacing: .5px;
+}
+
+.user-login-box {
+	padding: 20px 28px 30px;
+}
+
+/* 输入框 */
+.user-login-box .layui-form-item {
+	position: relative;
+	margin-bottom: 18px;
+}
+
+.user-login-icon {
+	position: absolute;
+	left: 14px;
+	top: 0;
+	z-index: 2;
+	width: 20px;
+	line-height: 44px;
+	color: #94a3b8;
+	text-align: center;
+}
+
+.user-login-box .layui-form-item .layui-input {
+	height: 44px;
+	line-height: 44px;
+	padding-left: 42px;
+	color: #0f172a;
+	font-size: 14px;
+	background: rgba(255, 255, 255, .95);
+	border: 1px solid rgba(255, 255, 255, .35);
+	border-radius: 10px;
+	box-shadow: none;
+	transition: border-color .2s, box-shadow .2s;
+}
+
+.user-login-box .layui-form-item .layui-input:hover {
+	border-color: rgba(255, 255, 255, .65);
+}
+
+.user-login-box .layui-form-item .layui-input:focus {
+	border-color: #7eb6ff;
+	box-shadow: 0 0 0 3px rgba(126, 182, 255, .3);
+}
+
+.user-login-box .layui-input::-webkit-input-placeholder {
+	color: #9aa7b8;
+}
+
+.user-login-box .layui-input::placeholder {
+	color: #9aa7b8;
+}
+
+/* 验证码图片 */
+.user-login-codeimg {
+	width: 100%;
+	height: 44px;
+	box-sizing: border-box;
+	background: #fff;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+/* 登录按钮 */
+.user-login-box .layui-btn {
+	width: 100%;
+	height: 44px;
+	line-height: 44px;
+	padding: 0;
+	color: #fff;
+	font-size: 15px;
+	font-weight: 500;
+	letter-spacing: 4px;
+	background: linear-gradient(90deg, #2f8cff, #1677ff);
+	border: none;
+	border-radius: 10px;
+	box-shadow: 0 12px 22px -10px rgba(22, 119, 255, .8);
+	transition: box-shadow .2s, transform .2s, filter .2s;
+}
+
+.user-login-box .layui-btn:hover {
+	filter: brightness(1.05);
+	box-shadow: 0 16px 26px -10px rgba(22, 119, 255, .9);
+	transform: translateY(-1px);
+}
+
+.user-login-box .layui-btn:active {
+	transform: translateY(0);
+}
+
+/* 底部信息 */
+.user-login-footer {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	padding: 20px;
+	box-sizing: border-box;
+	color: rgba(255, 255, 255, .6);
+	font-size: 12px;
+	line-height: 1.6;
+	text-align: center;
+}
+
+.user-login-footer span {
+	padding: 0 6px;
+}
+
+.user-login-footer a {
+	color: rgba(255, 255, 255, .7);
+	transition: color .2s;
+}
+
+.user-login-footer a:hover {
+	color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+	.user-login {
+		padding: 30px 16px 80px;
+	}
+
+	.user-login-main {
+		width: 340px;
+	}
+
+	.user-login-header {
+		padding-top: 26px;
+	}
+
+	.user-login-box {
+		padding: 16px 20px 24px;
+	}
+}
+
+@media \0screen\,screen\9 {/* 只支持IE6、7、8 */
+	.user-login-header h2 {
+		color: #000;
+	}
+
+	.user-login-header p {
+		color: #999;
+	}
+}

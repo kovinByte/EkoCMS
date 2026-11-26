@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+	<meta charset="utf-8">
+	<title>{eko:pagetitle}</title>
+	<meta name="keywords" content="{eko:pagekeywords}">
+	<meta name="description" content="{eko:pagedescription}">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="{eko:sitepath}/favicon.ico" type="image/x-icon">
+	<script src="{eko:sitetplpath}/assets/js/global.js"></script>
+	<link rel="stylesheet" href="{eko:sitetplpath}/assets/css/bundle.min.css">
+	<link rel="stylesheet" href="{eko:sitetplpath}/assets/font-awesome/css/all.min.css">
+	<script src="{eko:sitetplpath}/assets/js/jquery.min.js"></script>
+	<script src="{eko:sitetplpath}/assets/js/bundle.min.js"></script>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans text-gray-700 antialiased">
+
+<!-- 顶部导航 -->
+<header id="siteHeader" class="fixed inset-x-0 top-0 z-50 bg-transparent transition-colors duration-300">
+	<div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+		<div class="flex h-18 items-center justify-between gap-4">
+			<a href="{eko:sitepath}/" class="flex shrink-0 items-center" aria-label="{eko:sitetitle}">
+				<span class="flex items-center rounded-lg bg-white px-3 py-1.5 shadow-sm">
+					<img src="{eko:sitelogo}" alt="{eko:sitetitle}" class="h-8 w-auto md:h-9">
+				</span>
+			</a>
+
+			<nav class="hidden items-center gap-1 lg:flex" aria-label="主导航">
+				<a href="{eko:sitepath}/" class="rounded-sm px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white {eko:if(0=='{sort:scode}')}bg-white/10 text-white{/eko:if}">首页</a>
+				{eko:nav num=10 parent=0}
+				<a href="[nav:link]" class="rounded-sm px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white {eko:if('[nav:scode]'=='{sort:tcode}')}bg-white/10 text-white{/eko:if}">[nav:name]</a>
+				{/eko:nav}
+			</nav>
+
+			<div class="hidden items-center gap-3 lg:flex">
+				<a href="{eko:scaction}" class="flex size-10 items-center justify-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-white" aria-label="搜索">
+					<i class="fa-solid fa-magnifying-glass"></i>
+				</a>
+				{eko:if({eko:islogin}==1)}
+					<a href="{eko:ucenter}" class="inline-flex h-10 items-center gap-2 rounded-sm border border-white/30 px-4 text-sm font-medium text-white transition hover:bg-white/10">
+						<i class="fa-regular fa-user"></i> 个人中心
+					</a>
+				{else}
+					{eko:2if({eko:registerstatus})}
+						<a href="{eko:register}" class="inline-flex h-10 items-center rounded-sm px-2 text-sm font-medium text-blue-100 transition hover:text-white">注册</a>
+					{/eko:2if}
+					{eko:2if({eko:loginstatus})}
+						<a href="{eko:login}" class="inline-flex h-10 items-center gap-2 rounded-sm border border-white/30 px-4 text-sm font-medium text-white transition hover:bg-white/10">
+							<i class="fa-regular fa-user"></i> 登录
+						</a>
+					{/eko:2if}
+				{/eko:if}
+				{eko:sort scode=10}
+				<a href="[sort:link]" class="inline-flex h-10 items-center gap-2 rounded-sm bg-blue-600 px-5 text-sm font-semibold text-white shadow-md transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg">
+					<i class="fa-solid fa-headset"></i> 免费咨询
+				</a>
+				{/eko:sort}
+			</div>
+
+			<button id="menuBtn" type="button" class="flex size-10 items-center justify-center rounded-sm text-white transition hover:bg-white/10 lg:hidden" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileMenu">
+				<i id="menuIcon" class="fa-solid fa-bars text-xl"></i>
+			</button>
+		</div>
+	</div>
+
+	<!-- 移动端菜单 -->
+	<div id="mobileMenu" class="hidden border-t border-white/10 bg-blue-900/95 backdrop-blur-md lg:hidden">
+		<nav class="mx-auto w-full max-w-7xl space-y-1 px-4 py-4 sm:px-6" aria-label="移动端导航">
+			<a href="{eko:sitepath}/" class="block rounded-sm px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white">首页</a>
+			{eko:nav num=10 parent=0}
+			<a href="[nav:link]" class="block rounded-sm px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white">[nav:name]</a>
+			{/eko:nav}
+			<div class="mt-3 flex flex-col gap-3 border-t border-white/10 pt-4">
+				{eko:if({eko:islogin}==1)}
+					<a href="{eko:ucenter}" class="inline-flex h-10 items-center justify-center gap-2 rounded-sm border border-white/30 text-sm font-medium text-white">
+						<i class="fa-regular fa-user"></i> 个人中心
+					</a>
+				{else}
+					<div class="flex gap-3">
+						{eko:2if({eko:registerstatus})}
+							<a href="{eko:register}" class="inline-flex h-10 flex-1 items-center justify-center rounded-sm border border-white/30 text-sm font-medium text-white">注册</a>
+						{/eko:2if}
+						{eko:2if({eko:loginstatus})}
+							<a href="{eko:login}" class="inline-flex h-10 flex-1 items-center justify-center rounded-sm border border-white/30 text-sm font-medium text-white">登录</a>
+						{/eko:2if}
+					</div>
+				{/eko:if}
+				{eko:sort scode=10}
+				<a href="[sort:link]" class="inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-blue-600 text-sm font-semibold text-white">
+					<i class="fa-solid fa-headset"></i> 免费咨询
+				</a>
+				{/eko:sort}
+				<a href="{eko:scaction}" class="inline-flex h-10 items-center justify-center gap-2 rounded-sm text-sm font-medium text-blue-100">
+					<i class="fa-solid fa-magnifying-glass"></i> 搜索
+				</a>
+			</div>
+		</nav>
+	</div>
+</header>

@@ -1,0 +1,91 @@
+{include file=comm/head.html}
+
+<!-- 会员页头部 -->
+<section class="relative overflow-hidden bg-blue-800 pt-18">
+	<div class="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-blue-600/30 blur-3xl"></div>
+	<div class="pointer-events-none absolute -bottom-28 left-1/4 size-72 rounded-full bg-cyan-500/20 blur-3xl"></div>
+	<div class="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+		<h1 class="text-3xl font-bold tracking-tight text-white md:text-4xl">会员登录</h1>
+		<p class="mt-3 text-base text-blue-100">登录后可管理个人资料、查看评论记录。</p>
+	</div>
+</section>
+
+<div class="mx-auto w-full max-w-md px-4 py-12 sm:px-6 md:py-16">
+	<div class="rounded-lg border border-gray-100 bg-white p-6 shadow-md md:p-8">
+		<div class="text-center">
+			<span class="mx-auto flex size-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+				<i class="fa-regular fa-user text-2xl"></i>
+			</span>
+			<h2 class="mt-4 text-xl font-semibold text-gray-900">欢迎回来</h2>
+			<p class="mt-2 text-sm text-gray-500">请使用账号、邮箱或手机号码登录</p>
+		</div>
+
+		<form class="mt-8 space-y-5" onsubmit="return login(this);">
+			<div>
+				<label for="username" class="mb-2 block text-sm font-medium text-gray-700">账号</label>
+				<input type="text" name="username" required id="username" class="h-11 w-full rounded-sm border border-gray-200 bg-white px-4 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入登录用户名/邮箱/手机号码">
+			</div>
+
+			<div>
+				<label for="password" class="mb-2 block text-sm font-medium text-gray-700">密码</label>
+				<input type="password" name="password" required id="password" class="h-11 w-full rounded-sm border border-gray-200 bg-white px-4 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入登录密码">
+			</div>
+
+			{eko:if({eko:logincodestatus})}
+			<div>
+				<label for="checkcode" class="mb-2 block text-sm font-medium text-gray-700">验证码</label>
+				<div class="flex flex-wrap items-center gap-3">
+					<input type="text" name="checkcode" required id="checkcode" class="h-11 w-40 rounded-sm border border-gray-200 bg-white px-4 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入验证码">
+					<img title="点击刷新" id="codeimg" class="h-11 w-32 cursor-pointer rounded-sm border border-gray-200 object-cover" src="{eko:checkcode}" alt="验证码" onclick="this.src='{eko:checkcode}?'+Math.round(Math.random()*10);">
+				</div>
+			</div>
+			{/eko:if}
+
+			<button type="submit" class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-blue-600 text-base font-medium text-white shadow-md transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:bg-blue-800">
+				<i class="fa-solid fa-arrow-right-to-bracket"></i> 立即登录
+			</button>
+		</form>
+
+		<div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-5 text-sm text-gray-500">
+			{eko:if({eko:registerstatus})}
+			<a href="{eko:register}" class="transition hover:text-blue-600">注册账号</a>
+			{/eko:if}
+			<a href="{eko:retrieve}" class="transition hover:text-blue-600">忘记密码？</a>
+		</div>
+	</div>
+</div>
+
+<script>
+function login(obj) {
+	var url = '{eko:login}';
+	var username = $(obj).find('#username').val();
+	var password = $(obj).find('#password').val();
+	var checkcode = $(obj).find('#checkcode').val();
+
+	$.ajax({
+		type: 'POST',
+		url: url,
+		dataType: 'json',
+		data: {
+			username: username,
+			password: password,
+			checkcode: checkcode
+		},
+		success: function (response) {
+			if (response.code) {
+				alert('登录成功！');
+				location.href = response.tourl;
+			} else {
+				$('#codeimg').click();
+				alert(response.data);
+			}
+		},
+		error: function () {
+			alert('返回数据异常！');
+		}
+	});
+	return false;
+}
+</script>
+
+{include file=comm/foot.html}

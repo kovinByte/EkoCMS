@@ -1,0 +1,65 @@
+###############
+#    folder   #
+###############
+/runtime
+/script
+/.screenshots
+/.trae-html-share-packages
+tests/tmp_*
+
+###############
+#   AI agent  #
+###############
+# 本地运行状态
+.omc
+.omo
+
+###############
+#  fixed file #
+###############
+# IndexNow密钥文件由后台生成于站点根目录
+/*.txt
+!/robots.txt
+
+
+#################
+## Eclipse
+#################
+
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+.idea/
+.DS_Store
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+
+############
+## Windows
+############
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini

@@ -1,0 +1,80 @@
+{include file=comm/head.html}
+
+{include file=comm/top.html}
+
+<div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+	<div class="grid gap-8 lg:grid-cols-3 lg:gap-10">
+		<article class="lg:col-span-2">
+			<div class="rounded-lg border border-gray-100 bg-white p-6 shadow-md md:p-10">
+				<h1 class="text-2xl font-bold leading-snug tracking-tight text-gray-900 md:text-3xl">{content:title}</h1>
+				<div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-gray-100 pb-5 text-sm text-gray-400">
+					<span class="inline-flex items-center gap-1.5"><i class="fa-regular fa-calendar"></i> {content:date style=Y-m-d}</span>
+					<span class="inline-flex items-center gap-1.5"><i class="fa-regular fa-eye"></i> 浏览 {content:visits}</span>
+					<span class="inline-flex items-center gap-1.5"><i class="fa-regular fa-user"></i> {eko:companyname}</span>
+				</div>
+
+				<div class="mt-8">
+					{include file=comm/prose.html}
+				</div>
+
+				<div class="mt-8 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-6">
+					<span class="text-sm text-gray-400">标签：</span>
+					{eko:tags id=[content:id] scode={sort:tcode}}
+					<a href="[tags:link]" class="rounded-sm bg-gray-100 px-3 py-1 text-xs text-gray-500 transition hover:bg-blue-50 hover:text-blue-600">[tags:text]</a>
+					{/eko:tags}
+				</div>
+			</div>
+
+			<div class="mt-6 grid gap-3 text-sm text-gray-500 [&_a]:text-gray-600 [&_a]:transition [&_a:hover]:text-blue-600 md:grid-cols-2">
+				<div class="rounded-lg border border-gray-100 bg-white p-4">
+					<span class="text-gray-400">上一篇：</span>{content:precontent}
+				</div>
+				<div class="rounded-lg border border-gray-100 bg-white p-4 md:text-right">
+					<span class="text-gray-400">下一篇：</span>{content:nextcontent}
+				</div>
+			</div>
+		</article>
+
+		<aside class="space-y-6">
+			<div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+				<h2 class="flex items-center gap-2 text-base font-semibold text-gray-900">
+					<i class="fa-regular fa-folder-open text-blue-600"></i> 新闻分类
+				</h2>
+				<div class="mt-4">
+					{include file=comm/sortnav.html}
+				</div>
+			</div>
+
+			<div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+				<h2 class="flex items-center gap-2 text-base font-semibold text-gray-900">
+					<i class="fa-solid fa-fire text-blue-600"></i> 最新资讯
+				</h2>
+				<ul class="mt-4 space-y-4">
+					{eko:list scode=2 num=4 order=date}
+					<li>
+						<a href="[list:link]" class="group block">
+							<p class="line-clamp-2 text-sm leading-6 text-gray-600 transition group-hover:text-blue-600">[list:title lencn=28]</p>
+							<span class="mt-1 inline-flex items-center gap-1 text-xs text-gray-400"><i class="fa-regular fa-clock"></i> [list:date style=Y-m-d]</span>
+						</a>
+					</li>
+					{/eko:list}
+				</ul>
+			</div>
+
+			<div class="overflow-hidden rounded-lg bg-blue-800 p-6 text-white shadow-md">
+				<span class="flex size-11 items-center justify-center rounded-lg bg-white/10">
+					<i class="fa-solid fa-headset text-xl text-cyan-300"></i>
+				</span>
+				<h2 class="mt-4 text-lg font-semibold">业务咨询</h2>
+				<p class="mt-2 text-sm leading-6 text-blue-200">专业的顾问团队，随时为您解答建站与数字化相关问题。</p>
+				<a href="tel:{eko:companyphone}" class="mt-4 inline-flex items-center gap-2 text-base font-semibold text-white">
+					<i class="fa-solid fa-phone text-cyan-300"></i> {eko:companyphone}
+				</a>
+			</div>
+		</aside>
+	</div>
+</div>
+
+{include file=comm/comment.html}
+
+{include file=comm/foot.html}

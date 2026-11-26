@@ -1,0 +1,45 @@
+{include file=comm/head.html}
+
+{include file=comm/top.html}
+
+<div class="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+	<article class="rounded-lg border border-gray-100 bg-white p-6 shadow-md md:p-10">
+		<div class="flex flex-wrap items-center gap-3">
+			<span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">招聘中</span>
+			<span class="inline-flex items-center gap-1 text-xs text-gray-400"><i class="fa-regular fa-calendar"></i> {content:date style=Y-m-d}</span>
+		</div>
+		<h1 class="mt-4 text-2xl font-bold leading-snug tracking-tight text-gray-900 md:text-3xl">{content:title}</h1>
+		<div class="mt-5 flex flex-wrap items-center gap-4 border-b border-gray-100 pb-5 text-sm text-gray-400">
+			<span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-location-dot"></i> {eko:companyaddress}</span>
+			<span class="inline-flex items-center gap-1.5"><i class="fa-regular fa-eye"></i> 浏览 {content:visits}</span>
+		</div>
+
+		<div class="mt-8">
+			{include file=comm/prose.html}
+		</div>
+
+		<div class="mt-8 flex flex-wrap gap-3 border-t border-gray-100 pt-6">
+			{eko:sort scode=10}
+			<a href="[sort:link]" class="inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-blue-600 px-7 text-base font-medium text-white shadow-md transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg">
+				<i class="fa-regular fa-paper-plane"></i> 投递简历
+			</a>
+			{/eko:sort}
+			<a href="tel:{eko:companyphone}" class="inline-flex h-11 items-center justify-center gap-2 rounded-sm border border-blue-600 bg-white px-7 text-base font-medium text-blue-600 transition hover:bg-blue-50">
+				<i class="fa-solid fa-phone"></i> 电话沟通
+			</a>
+		</div>
+	</article>
+
+	<div class="mt-6 grid gap-3 text-sm text-gray-500 [&_a]:text-gray-600 [&_a]:transition [&_a:hover]:text-blue-600 md:grid-cols-2">
+		<div class="rounded-lg border border-gray-100 bg-white p-4">
+			<span class="text-gray-400">上一篇：</span>{content:precontent}
+		</div>
+		<div class="rounded-lg border border-gray-100 bg-white p-4 md:text-right">
+			<span class="text-gray-400">下一篇：</span>{content:nextcontent}
+		</div>
+	</div>
+</div>
+
+{include file=comm/comment.html}
+
+{include file=comm/foot.html}

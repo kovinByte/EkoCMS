@@ -1,0 +1,194 @@
+<?php
+/**
+ *  自定义标签控制器
+ */
+namespace app\admin\controller\content;
+
+use core\basic\Controller;
+use app\admin\model\content\LabelModel;
+
+class LabelController extends Controller
+{
+
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = new LabelModel();
+    }
+
+    // 自定义标签列表
+    public function index()
+    {
+        // 修改参数配置
+        if ($_POST) {
+            $typeMap = $this->model->getTypeMap();
+            if (! is_array($typeMap)) {
+                $typeMap = array();
+            }
+            $labelHtmlForSync = '';
+            foreach ($_POST as $key => $value) {
+                if (preg_match('/^[\w\-]+$/', $key)) { // 带有违规字符时不带入查询
+                    $data = post($key);
+                    $type = isset($typeMap[$key]) ? (int) $typeMap[$key] : 0;
+                    // 仅编辑器标签（type=5）做无引号 src 规范化；其它类型保持 post() 结果
+                    if ($type === 5) {
+                        $data = normalize_richtext_for_storage($data);
+                        if (stripos((string) $data, 'iframe') !== false) {
+                            $labelHtmlForSync .= decode_string($data) . "\n";
+                        }
+                    }
+                    $data = str_replace("\r\n", "<br>", $data); // 多行文本时替换回车
+                    $this->model->modValue($key, $data);
+                }
+            }
+            $msg = '修改成功！';
+            if ($labelHtmlForSync !== '' && ($notice = iframe_whitelist_sync_notice($labelHtmlForSync, '修改成功！'))) {
+                $msg = $notice;
+            }
+            success($msg, url('admin/Label/index'));
+        }
+        $this->assign('list', true);
+        $this->assign('labels', $this->model->getList());
+        $this->display('content/label.html');
+    }
+
+    // 自定义标签字段增加
+    public function add()
+    {
+        if ($_POST) {
+            // 获取数据
+            $name = post('name', 'var');
+            $description = post('description');
+            $type = post('type');
+            
+            if (! $name) {
+                alert_back('标签名称不能为空！');
+            }
+
+            if ($name && ! preg_match('/^[a-zA-Z0-9\_\/]+$/', $name)) {
+                alert_back('标签名称只允许字母、数字、下划线组成!');
+            }
+
+            if (! $description) {
+                alert_back('标题描述不能为空！');
+            }
+            
+            if (! $type) {
+                alert_back('标签类型不能为空！');
+            }
+            
+            // 检查标签名称
+            if ($this->model->checkLabel("name='$name'")) {
+                alert_back('该自定义标签称已经存在，不能再使用！');
+            }
+            
+            // 构建数据
+            $data = array(
+                'name' => $name,
+                'description' => $description,
+                'value' => '', // 添加时设置为空
+                'type' => $type,
+                'create_user' => session('username'),
+                'update_user' => session('username')
+            );
+            
+            // 执行添加
+            $labelBack = admin_back_target(url('admin/Label/index' . get_tab('t2'), false));
+            if ($this->model->addLabel($data)) {
+                $this->log('修改自定义标签' . $name . '成功！');
+                success('新增成功！', $labelBack);
+            } else {
+                $this->log('新增自定义标签' . $name . '失败！');
+                alert_back('新增失败！');
+            }
+        }
+    }
+
+    // 自定义标签字段删除
+    public function del()
+    {
+        $labelUrl = url('admin/Label/index' . get_tab('t2'), false);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error('请使用正确方式提交！', $labelUrl);
+        }
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', $labelUrl);
+        }
+        if ($this->model->delLabel($id)) {
+            $this->log('删除自定义标签' . $id . '成功！');
+            success('删除成功！', $labelUrl);
+        } else {
+            $this->log('删除自定义标签' . $id . '失败！');
+            error('删除失败！', $labelUrl);
+        }
+    }
+
+    // 自定义标签字段修改
+    public function mod()
+    {
+        $labelUrl = url('admin/Label/index' . get_tab('t2'), false);
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', $labelUrl);
+        }
+        
+        // 修改操作
+        if ($_POST) {
+            // 获取数据
+            $name = post('name', 'var');
+            $description = post('description');
+            $type = post('type');
+            if (! $name) {
+                alert_back('标签名称不能为空！');
+            }
+
+            if ($name && ! preg_match('/^[a-zA-Z0-9\_\/]+$/', $name)) {
+                alert_back('标签名称只允许字母、数字、下划线组成!');
+            }
+
+            if (! $description) {
+                alert_back('标签描述不能为空！');
+            }
+            
+            if (! $type) {
+                alert_back('标签类型不能为空！');
+            }
+            
+            // 检查标签名称
+            if ($this->model->checkLabel("name='$name' AND id<>$id")) {
+                alert_back('该自定义标签名称已经存在，不能再使用！');
+            }
+            
+            // 构建数据
+            $data = array(
+                'name' => $name,
+                'description' => $description,
+                'type' => $type,
+                'update_user' => session('username')
+            );
+            
+            // 执行添加
+            $back = admin_back_target($labelUrl);
+            if (! $this->model->getLabel($id)) {
+                error('编辑的内容已经不存在！', $labelUrl);
+            }
+            if ($this->model->modLabel($id, $data)) {
+                $this->log('修改自定义标签字段' . $id . '成功！');
+                success('修改成功！', $back);
+            } else {
+                success('修改成功！', $back);
+            }
+        } else {
+            $this->assign('mod', true);
+            
+            // 调取修改内容
+            $result = $this->model->getLabel($id);
+            if (! $result) {
+                error('编辑的内容已经不存在！', $labelUrl);
+            }
+            $this->assign('label', $result);
+            
+            $this->display('content/label.html');
+        }
+    }
+}

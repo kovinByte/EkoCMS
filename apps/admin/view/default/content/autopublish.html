@@ -1,0 +1,308 @@
+{include file='common/head.html'}
+
+<div class="layui-body">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+		<ul class="layui-tab-title">
+			<li class="layui-this">定时发布</li>
+		</ul>
+		<div class="layui-tab-content">
+			<div class="layui-tab-item layui-show">
+				<form id="autoPublishForm" class="layui-form" onsubmit="return false;">
+					<input type="hidden" name="formcheck" value="{$formcheck}">
+					<div class="layui-form-item">
+						<label class="layui-form-label">访问 Token</label>
+						<div class="layui-input-inline" style="width:420px;">
+							<input type="text" name="token" value="{$auto_publish->token}" class="layui-input" readonly>
+						</div>
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn layui-btn-primary" id="autoPublishResetToken">重置</button>
+						</div>
+						<div class="layui-form-mid layui-word-aux">用于保护定时访问地址与配额查询接口，泄露后可在此重置。</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">生效时间</label>
+						<div class="layui-input-inline" style="width:200px;">
+							<input type="text" id="autoPublishStart" name="start" value="{$auto_publish->start}" placeholder="每天开始，如 08:00" class="layui-input" autocomplete="off">
+						</div>
+						<div class="layui-form-mid">至</div>
+						<div class="layui-input-inline" style="width:200px;">
+							<input type="text" id="autoPublishEnd" name="end" value="{$auto_publish->end}" placeholder="每天结束，如 18:00" class="layui-input" autocomplete="off">
+						</div>
+						<div class="layui-form-mid layui-word-aux">每天的几点几分生效，留空表示不限制；结束时间早于开始时间表示跨天（如 22:00 至 06:00）。</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">发布间隔</label>
+						<div class="layui-input-inline" style="width:160px;">
+							<input type="number" class="layui-input" name="interval" value="{$auto_publish->interval}" min="1" max="1440">
+						</div>
+						<div class="layui-form-mid">分钟</div>
+						<div class="layui-form-mid layui-word-aux">两次发布动作之间的最小间隔，由外部定时任务访问触发。</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">每次发布</label>
+						<div class="layui-input-inline" style="width:160px;">
+							<input type="number" class="layui-input" name="count" value="{$auto_publish->count}" min="1" max="100">
+						</div>
+						<div class="layui-form-mid">篇</div>
+						<div class="layui-form-mid layui-word-aux">每次执行最多发布多少篇隐藏内容（按 ID 升序）。</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">每日总量</label>
+						<div class="layui-input-inline" style="width:160px;">
+							<input type="text" id="autoPublishDayTotal" value="{$auto_publish->day_total}" class="layui-input" readonly>
+						</div>
+						<div class="layui-form-mid">篇/天</div>
+						<div class="layui-form-mid layui-word-aux">由下方所有参与栏目「每日上限」自动汇总，栏目留空或为 0 表示不参与定时发布。</div>
+					</div>
+					{if([$auto_publish->sorts])}
+					<div class="layui-form-item">
+						<label class="layui-form-label">栏目上限</label>
+						<div class="layui-input-block">
+							<table class="layui-table" lay-skin="line">
+								<thead>
+									<tr>
+										<th>栏目</th>
+										<th style="width:160px;">每日上限</th>
+										<th style="width:100px;">今日已发</th>
+									</tr>
+								</thead>
+								<tbody>
+									{foreach [$auto_publish->sorts](key,value)}
+									<tr>
+										<td>[value->name]</td>
+										<td><input type="number" class="layui-input auto-publish-limit" name="sort_limits[[value->scode]]" value="[value->limit]" min="0" max="10000" placeholder="0 或留空不参与"></td>
+										<td>[value->today]</td>
+									</tr>
+									{/foreach}
+								</tbody>
+							</table>
+							<div class="layui-form-mid layui-word-aux">填写大于 0 的整数表示该栏目每日最多自动发布篇数；留空或 0 表示该栏目不参与定时发布。</div>
+						</div>
+					</div>
+					{else}
+					<div class="layui-form-item">
+						<label class="layui-form-label">栏目上限</label>
+						<div class="layui-input-block">
+							<div class="layui-form-mid layui-word-aux">当前没有可参与定时发布的栏目（单页模型栏目不支持内容发布）。</div>
+						</div>
+					</div>
+					{/if}
+					<div class="layui-form-item">
+						<label class="layui-form-label">随机访问量</label>
+						<div class="layui-input-inline" style="width:160px;">
+							<input type="number" class="layui-input" name="visits_min" value="{$auto_publish->visits_min}" min="0" max="1000000">
+						</div>
+						<div class="layui-form-mid">至</div>
+						<div class="layui-input-inline" style="width:160px;">
+							<input type="number" class="layui-input" name="visits_max" value="{$auto_publish->visits_max}" min="0" max="1000000">
+						</div>
+						<div class="layui-form-mid layui-word-aux">发布时随机写入的访问量区间。</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn" id="autoPublishSaveBtn">保存配置</button>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">定时访问地址</label>
+						<div class="layui-input-inline" style="width:580px;">
+							<input type="text" id="autoPublishUrl" value="{$auto_publish->url}" class="layui-input" readonly>
+						</div>
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn layui-btn-primary" id="autoPublishCopyUrl">复制地址</button>
+						</div>
+						<div class="layui-form-mid layui-word-aux">将该地址加入服务器的计划任务（如 crontab），按发布间隔定期访问即可自动发布。</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">配额查询接口</label>
+						<div class="layui-input-inline" style="width:580px;">
+							<input type="text" id="autoPublishStatUrl" value="{$auto_publish->stat_url}" class="layui-input" readonly>
+						</div>
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn layui-btn-primary" id="autoPublishCopyStatUrl">复制地址</button>
+						</div>
+						<div class="layui-form-mid layui-word-aux">供外部系统调用，返回 JSON：daily_total（每日总量配额）、hidden_count（隐藏内容数量）。</div>
+					</div>
+					<blockquote class="layui-elem-quote layui-quote-nm">
+						提示：每日总量等于所有参与栏目每日上限之和；栏目留空或填写 0 表示不参与定时发布。定时任务只会发布已参与栏目中的隐藏内容，跨天自动重置当日计数。
+					</blockquote>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	var autoForm = document.getElementById('autoPublishForm');
+	if (!autoForm || !window.layui) {
+		return;
+	}
+
+	layui.use(['form', 'laydate'], function () {
+		var laydate = layui.laydate;
+		laydate.render({
+			elem: '#autoPublishStart',
+			type: 'time',
+			format: 'HH:mm'
+		});
+		laydate.render({
+			elem: '#autoPublishEnd',
+			type: 'time',
+			format: 'HH:mm'
+		});
+	});
+
+	var totalInput = document.getElementById('autoPublishDayTotal');
+
+	function calcDayTotal() {
+		if (!totalInput) {
+			return;
+		}
+		var inputs = autoForm.querySelectorAll('.auto-publish-limit');
+		var total = 0;
+		for (var i = 0; i < inputs.length; i++) {
+			var value = parseInt(inputs[i].value, 10);
+			if (!isNaN(value) && value > 0) {
+				total += value;
+			}
+		}
+		totalInput.value = total;
+	}
+
+	autoForm.addEventListener('input', function (event) {
+		if (event.target && event.target.classList.contains('auto-publish-limit')) {
+			calcDayTotal();
+		}
+	});
+	calcDayTotal();
+
+	function fallbackCopy(text) {
+		var ta = document.createElement('textarea');
+		ta.value = text;
+		ta.style.position = 'fixed';
+		ta.style.top = '-1000px';
+		ta.style.opacity = '0';
+		document.body.appendChild(ta);
+		ta.select();
+		try {
+			document.execCommand('copy');
+		} catch (e) {}
+		document.body.removeChild(ta);
+	}
+
+	function copyText(text, msg) {
+		if (!text) {
+			return;
+		}
+		var done = function () {
+			layer.msg(msg, {icon: 1});
+		};
+		if (navigator.clipboard && window.isSecureContext) {
+			navigator.clipboard.writeText(text).then(done, function () {
+				fallbackCopy(text);
+				done();
+			});
+		} else {
+			fallbackCopy(text);
+			done();
+		}
+	}
+
+	function newToken() {
+		var bytes = new Uint8Array(16);
+		if (window.crypto && window.crypto.getRandomValues) {
+			window.crypto.getRandomValues(bytes);
+		} else {
+			for (var i = 0; i < bytes.length; i++) {
+				bytes[i] = Math.floor(Math.random() * 256);
+			}
+		}
+		var hex = '';
+		for (var j = 0; j < bytes.length; j++) {
+			hex += ('0' + bytes[j].toString(16)).slice(-2);
+		}
+		return hex;
+	}
+
+	function updateUrls(token) {
+		var urlInput = document.getElementById('autoPublishUrl');
+		var statInput = document.getElementById('autoPublishStatUrl');
+		if (urlInput) {
+			urlInput.value = urlInput.value.split('?token=')[0] + '?token=' + token;
+		}
+		if (statInput) {
+			statInput.value = statInput.value.split('?token=')[0] + '?token=' + token;
+		}
+	}
+
+	function saveConfig(successMsg, onFail) {
+		var data = {
+			formcheck: autoForm.querySelector('input[name=formcheck]').value,
+			token: autoForm.querySelector('input[name=token]').value,
+			start: autoForm.querySelector('input[name=start]').value,
+			end: autoForm.querySelector('input[name=end]').value,
+			interval: autoForm.querySelector('input[name=interval]').value,
+			count: autoForm.querySelector('input[name=count]').value,
+			visits_min: autoForm.querySelector('input[name=visits_min]').value,
+			visits_max: autoForm.querySelector('input[name=visits_max]').value
+		};
+		var limitInputs = autoForm.querySelectorAll('input[name^="sort_limits["]');
+		for (var i = 0; i < limitInputs.length; i++) {
+			data[limitInputs[i].getAttribute('name')] = limitInputs[i].value;
+		}
+		var loadIndex = layer.load(1, {shade: 0.2});
+		$.ajax({
+			url: '{url./admin/AutoPublish/mod}',
+			type: 'POST',
+			data: data,
+			dataType: 'json',
+			success: function (res) {
+				layer.close(loadIndex);
+				if (!res || res.code != 1) {
+					layer.alert((res && res.data) ? res.data : '保存失败，请重试');
+					if (onFail) {
+						onFail();
+					}
+					return;
+				}
+				layer.msg(successMsg || '保存成功', {icon: 1});
+			},
+			error: function () {
+				layer.close(loadIndex);
+				layer.alert('保存失败，请检查网络后重试');
+				if (onFail) {
+					onFail();
+				}
+			}
+		});
+	}
+
+	document.getElementById('autoPublishResetToken').addEventListener('click', function () {
+		var tokenInput = autoForm.querySelector('input[name=token]');
+		var oldToken = tokenInput.value;
+		var token = newToken();
+		tokenInput.value = token;
+		updateUrls(token);
+		saveConfig('Token 已重置并保存', function () {
+			tokenInput.value = oldToken;
+			updateUrls(oldToken);
+		});
+	});
+
+	document.getElementById('autoPublishCopyUrl').addEventListener('click', function () {
+		copyText(document.getElementById('autoPublishUrl').value, '定时访问地址已复制');
+	});
+
+	document.getElementById('autoPublishCopyStatUrl').addEventListener('click', function () {
+		copyText(document.getElementById('autoPublishStatUrl').value, '配额查询接口已复制');
+	});
+
+	document.getElementById('autoPublishSaveBtn').addEventListener('click', function () {
+		calcDayTotal();
+		saveConfig('保存成功');
+	});
+});
+</script>
+
+{include file='common/foot.html'}

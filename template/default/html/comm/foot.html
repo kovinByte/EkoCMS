@@ -1,0 +1,200 @@
+<!-- 页脚 -->
+<footer class="bg-blue-900 text-blue-100">
+	<div class="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+		<div class="grid gap-10 lg:grid-cols-12">
+			<div class="lg:col-span-4">
+				<a href="{eko:sitepath}/" class="inline-flex items-center rounded-lg bg-white px-3 py-2">
+					<img src="{eko:sitelogo}" alt="{eko:sitetitle}" class="h-9 w-auto">
+				</a>
+				<p class="mt-5 max-w-sm text-sm leading-7 text-blue-200">{eko:sitedescription}</p>
+				<div class="mt-6 flex items-center gap-3">
+					<span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-blue-100">
+						<i class="fa-solid fa-shield-halved text-cyan-300"></i> 资质认证
+					</span>
+					<span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-blue-100">
+						<i class="fa-solid fa-code text-cyan-300"></i> 开源免费
+					</span>
+				</div>
+			</div>
+
+			<div class="lg:col-span-3">
+				<h2 class="text-sm font-semibold tracking-wide text-white">快速导航</h2>
+				<ul class="mt-5 grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+					{eko:nav num=10 parent=0}
+					<li><a href="[nav:link]" class="text-blue-200 transition hover:text-white">[nav:name]</a></li>
+					{/eko:nav}
+				</ul>
+			</div>
+
+			<div class="lg:col-span-3">
+				<h2 class="text-sm font-semibold tracking-wide text-white">联系我们</h2>
+				<ul class="mt-5 space-y-3 text-sm">
+					<li class="flex items-start gap-3">
+						<i class="fa-solid fa-phone mt-1 text-cyan-300"></i>
+						<a href="tel:{eko:companyphone}" class="text-blue-200 transition hover:text-white">{eko:companyphone}</a>
+					</li>
+					<li class="flex items-start gap-3">
+						<i class="fa-regular fa-envelope mt-1 text-cyan-300"></i>
+						<a href="mailto:{eko:companyemail}" class="text-blue-200 transition hover:text-white">{eko:companyemail}</a>
+					</li>
+					<li class="flex items-start gap-3">
+						<i class="fa-solid fa-location-dot mt-1 text-cyan-300"></i>
+						<span class="text-blue-200">{eko:companyaddress}</span>
+					</li>
+					<li class="flex items-start gap-3">
+						<i class="fa-brands fa-qq mt-1 text-cyan-300"></i>
+						<span class="text-blue-200">{eko:companyqq}</span>
+					</li>
+				</ul>
+			</div>
+
+			<div class="lg:col-span-2">
+				<h2 class="text-sm font-semibold tracking-wide text-white">手机访问</h2>
+				<div class="mt-5 inline-flex rounded-lg bg-white p-2 [&_.qrcode]:size-28">
+					{eko:qrcode string={eko:httpurl}{URL}}
+				</div>
+				<p class="mt-3 text-xs text-blue-300">扫一扫 手机浏览</p>
+			</div>
+		</div>
+
+		<div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-blue-300 md:flex-row md:items-center md:justify-between">
+			<p>{eko:sitecopyright}</p>
+			<div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+				<span>营业执照：{eko:companyblicense}</span>
+				<a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener" class="transition hover:text-white">{eko:siteicp}</a>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<!-- 移动端占位 -->
+<div class="h-16 md:hidden"></div>
+
+<!-- 移动端底部导航 -->
+<div class="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-blue-700 bg-blue-800 text-white md:hidden">
+	<a href="tel:{eko:companymobile}" class="flex flex-col items-center gap-1 py-2.5 text-xs">
+		<i class="fa-solid fa-phone text-base"></i> 电话咨询
+	</a>
+	<a href="https://wpa.qq.com/msgrd?v=3&uin={eko:companyqq}&site=qq&menu=yes" target="_blank" rel="noopener" class="flex flex-col items-center gap-1 border-x border-blue-700 py-2.5 text-xs">
+		<i class="fa-brands fa-qq text-base"></i> 在线咨询
+	</a>
+	{eko:sort scode=10}
+	<a href="[sort:link]" class="flex flex-col items-center gap-1 py-2.5 text-xs">
+		<i class="fa-regular fa-comment-dots text-base"></i> 在线留言
+	</a>
+	{/eko:sort}
+</div>
+
+<!-- 悬浮工具条 -->
+<div class="fixed bottom-24 right-4 z-40 hidden flex-col gap-2 md:flex">
+	<a href="tel:{eko:companyphone}" class="group relative flex size-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg" aria-label="电话咨询">
+		<i class="fa-solid fa-phone"></i>
+		<span class="pointer-events-none absolute right-14 whitespace-nowrap rounded-sm bg-gray-900 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">{eko:companyphone}</span>
+	</a>
+	<a href="https://wpa.qq.com/msgrd?v=3&uin={eko:companyqq}&site=qq&menu=yes" target="_blank" rel="noopener" class="group relative flex size-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg" aria-label="QQ咨询">
+		<i class="fa-brands fa-qq"></i>
+		<span class="pointer-events-none absolute right-14 whitespace-nowrap rounded-sm bg-gray-900 px-3 py-1.5 text-xs text-white opacity-0 transition group-hover:opacity-100">QQ 在线咨询</span>
+	</a>
+	<div class="group relative flex size-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg" aria-label="微信联系">
+		<i class="fa-brands fa-weixin"></i>
+		<div class="pointer-events-none absolute bottom-0 right-14 w-36 rounded-lg bg-white p-2 opacity-0 shadow-xl transition group-hover:opacity-100">
+			<img src="{eko:companyweixin}" alt="微信二维码" class="w-full rounded">
+			<p class="mt-1 text-center text-xs text-gray-500">微信扫一扫</p>
+		</div>
+	</div>
+</div>
+
+<button id="backTop" type="button" class="fixed bottom-6 right-4 z-40 hidden size-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-lg transition hover:border-blue-300 hover:text-blue-600 md:flex" aria-label="返回顶部">
+	<i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<script>
+(function () {
+	var header = document.getElementById('siteHeader');
+	var menuBtn = document.getElementById('menuBtn');
+	var menuIcon = document.getElementById('menuIcon');
+	var mobileMenu = document.getElementById('mobileMenu');
+	var backTop = document.getElementById('backTop');
+
+	function syncHeader() {
+		if (window.scrollY > 24) {
+			header.classList.add('bg-blue-800/95', 'backdrop-blur-md', 'shadow-lg');
+			header.classList.remove('bg-transparent');
+		} else {
+			header.classList.remove('bg-blue-800/95', 'backdrop-blur-md', 'shadow-lg');
+			header.classList.add('bg-transparent');
+		}
+		if (backTop) {
+			if (window.scrollY > 320) {
+				backTop.classList.remove('hidden');
+			} else {
+				backTop.classList.add('hidden');
+			}
+		}
+	}
+
+	window.addEventListener('scroll', syncHeader, { passive: true });
+	syncHeader();
+
+	if (menuBtn && mobileMenu) {
+		menuBtn.addEventListener('click', function () {
+			var opened = !mobileMenu.classList.contains('hidden');
+			mobileMenu.classList.toggle('hidden');
+			menuBtn.setAttribute('aria-expanded', opened ? 'false' : 'true');
+			if (menuIcon) {
+				menuIcon.classList.toggle('fa-bars', opened);
+				menuIcon.classList.toggle('fa-xmark', !opened);
+			}
+		});
+		mobileMenu.querySelectorAll('a').forEach(function (link) {
+			link.addEventListener('click', function () {
+				mobileMenu.classList.add('hidden');
+				menuBtn.setAttribute('aria-expanded', 'false');
+				if (menuIcon) {
+					menuIcon.classList.add('fa-bars');
+					menuIcon.classList.remove('fa-xmark');
+				}
+			});
+		});
+	}
+
+	if (backTop) {
+		backTop.addEventListener('click', function () {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		});
+	}
+
+	// 读取服务端写入的表单提示，在当前页面内联展示
+	function ekoToast(message, type) {
+		var box = document.createElement('div');
+		box.className = 'pointer-events-none fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-sm px-5 py-3 text-sm text-white opacity-0 shadow-lg transition-opacity duration-300 ' + (type === 'error' ? 'bg-red-600' : 'bg-emerald-600');
+		box.textContent = message;
+		document.body.appendChild(box);
+		window.requestAnimationFrame(function () {
+			box.classList.remove('opacity-0');
+		});
+		window.setTimeout(function () {
+			box.classList.add('opacity-0');
+			window.setTimeout(function () {
+				box.remove();
+			}, 300);
+		}, 2400);
+	}
+
+	try {
+		var flash = sessionStorage.getItem('ekoFlash');
+		if (flash) {
+			sessionStorage.removeItem('ekoFlash');
+			var flashData = JSON.parse(flash);
+			if (flashData && flashData.msg) {
+				ekoToast(flashData.msg, flashData.type);
+			}
+		}
+	} catch (e) {}
+})();
+</script>
+
+{eko:sitestatistical}
+
+</body>
+</html>

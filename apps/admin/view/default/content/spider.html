@@ -1,0 +1,198 @@
+{include file='common/head.html'}
+
+<div class="layui-body">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+		<ul class="layui-tab-title">
+			<li class="layui-this">蜘蛛统计</li>
+		</ul>
+		<div class="layui-tab-content">
+			<div class="layui-tab-item layui-show">
+				<form action="{url./admin/Spider/index}" method="get" class="layui-form" id="spiderForm">
+					{$pathinfo}
+					<div class="layui-form-item nospace spider-toolbar">
+						<div class="spider-select">
+							<button type="button" class="layui-btn layui-btn-primary" id="spiderToggle">
+								蜘蛛选择 <span class="spider-selected">已选 {$selected_count}</span>
+								<i class="layui-icon layui-icon-down"></i>
+							</button>
+							<div class="spider-panel" id="spiderPanel">
+								<div class="spider-panel-head">
+									<span>搜索引擎蜘蛛</span>
+									<a href="javascript:;" id="spiderAll">全选</a>
+									<a href="javascript:;" id="spiderNone">清空</a>
+								</div>
+								<div class="spider-panel-list">
+									{foreach $spider_options(key,value,num)}
+									<label class="spider-option">
+										<input type="checkbox" name="spider[]" value="[value->code]" {if($value->checked)}checked{/if}>
+										<span>[value->name]</span>
+										<em>[value->count]</em>
+									</label>
+									{/foreach}
+								</div>
+							</div>
+						</div>
+						<div class="layui-input-inline" style="width:100px;">
+							<select name="field">
+								<option value="title" {if([$field]=='title')}selected{/if}>标题</option>
+								<option value="url" {if([$field]=='url')}selected{/if}>地址</option>
+								<option value="ip" {if([$field]=='ip')}selected{/if}>IP</option>
+							</select>
+						</div>
+						<div class="layui-input-inline" style="width:200px;">
+							<input type="text" name="keyword" value="{$keyword}" placeholder="请输入搜索关键字" class="layui-input">
+						</div>
+						<div class="layui-input-inline" style="width:130px;">
+							<input type="text" id="spiderStart" name="start" value="{$start}" placeholder="开始日期" class="layui-input" autocomplete="off">
+						</div>
+						<span class="spider-range-sep">到</span>
+						<div class="layui-input-inline" style="width:130px;">
+							<input type="text" id="spiderEnd" name="end" value="{$end}" placeholder="结束日期" class="layui-input" autocomplete="off">
+						</div>
+						<div class="layui-input-inline">
+							<button type="submit" class="layui-btn">搜索</button>
+							<a class="layui-btn layui-btn-primary" href="{$clear_url}">清除搜索</a>
+						</div>
+					</div>
+				</form>
+
+				<div class="spider-summary">
+					共 <b>{$total}</b> 条记录，日期范围 {$start} 至 {$end}
+					{if([$keyword])}，关键字：<b>{$keyword}</b>{/if}
+				</div>
+
+				<table class="layui-table spider-table">
+					<thead>
+						<tr>
+							<th style="width:150px;">
+								<a class="spider-sort" href="{$time_url}">时间
+									{if([$order]=='time')}
+										{if([$dir]=='asc')}<i class="layui-icon layui-icon-up"></i>{else}<i class="layui-icon layui-icon-down"></i>{/if}
+									{else}<i class="layui-icon layui-icon-up"></i><i class="layui-icon layui-icon-down"></i>{/if}
+								</a>
+							</th>
+							<th style="width:90px;">蜘蛛</th>
+							<th style="width:110px;">IP</th>
+							<th style="width:80px;">来源</th>
+							<th>标题</th>
+							<th style="width:42%;">
+								<a class="spider-sort" href="{$url_url}">地址
+									{if([$order]=='url')}
+										{if([$dir]=='asc')}<i class="layui-icon layui-icon-up"></i>{else}<i class="layui-icon layui-icon-down"></i>{/if}
+									{else}<i class="layui-icon layui-icon-up"></i><i class="layui-icon layui-icon-down"></i>{/if}
+								</a>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{foreach $records(key,value,num)}
+						<tr>
+							<td title="[value->time]">[value->time_display]</td>
+							<td><span class="spider-tag">[value->spider_name]</span></td>
+							<td title="[value->ip]">[value->ip]</td>
+							<td>[value->source]</td>
+							<td class="spider-title" title="[value->title]">[value->title]</td>
+							<td class="spider-url">
+								{if($value->url_safe)}
+								<a href="[value->url]" target="_blank" rel="noopener" title="[value->url]">[value->url]</a>
+								{else}
+								[value->url]
+								{/if}
+							</td>
+						</tr>
+						{/foreach}
+						{if(![$records])}
+						<tr>
+							<td colspan="6" class="spider-empty">未查询到蜘蛛访问记录</td>
+						</tr>
+						{/if}
+					</tbody>
+				</table>
+
+				<div class="page">{$pagebar}</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+.spider-toolbar { position: relative; }
+.spider-select { position: relative; float: left; margin-right: 10px; }
+.spider-select .spider-selected { font-size: 12px; color: #999; margin: 0 2px 0 4px; }
+.spider-panel { display: none; position: absolute; top: 42px; left: 0; width: 220px; padding: 8px 0; background: #fff; border: 1px solid #e6e6e6; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,.12); z-index: 1000; }
+.spider-panel.open { display: block; }
+.spider-panel-head { display: flex; align-items: center; padding: 0 12px 8px; border-bottom: 1px solid #f2f2f2; font-size: 12px; color: #666; }
+.spider-panel-head span { flex: 1; }
+.spider-panel-head a { margin-left: 10px; color: #1e9fff; }
+.spider-panel-list { max-height: 280px; overflow-y: auto; padding-top: 4px; }
+.spider-option { display: flex; align-items: center; padding: 5px 12px; cursor: pointer; font-size: 13px; color: #333; }
+.spider-option:hover { background: #f5f8ff; }
+.spider-option input { margin-right: 8px; }
+.spider-option span { flex: 1; }
+.spider-option em { font-style: normal; color: #999; font-size: 12px; }
+.spider-range-sep { float: left; line-height: 38px; margin-right: 10px; color: #666; }
+.spider-summary { padding: 0 0 12px; color: #666; }
+.spider-tag { display: inline-block; padding: 0 8px; line-height: 22px; border-radius: 3px; background: #f2f8ff; color: #1e9fff; font-size: 12px; }
+.spider-table { table-layout: fixed; }
+.spider-table th, .spider-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spider-url a { color: #01aaed; }
+.spider-empty { text-align: center; color: #999; padding: 30px 0 !important; }
+.spider-sort { color: #333; }
+.spider-sort:hover { color: #1e9fff; }
+.spider-sort .layui-icon { font-size: 12px; margin-left: 2px; }
+</style>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	var toggle = document.getElementById('spiderToggle');
+	var panel = document.getElementById('spiderPanel');
+	var selectedLabel = panel ? panel.parentNode.querySelector('.spider-selected') : null;
+
+	function syncSelected() {
+		if (!panel || !selectedLabel) return;
+		var count = panel.querySelectorAll('input[type=checkbox]:checked').length;
+		selectedLabel.textContent = '已选 ' + count;
+	}
+
+	if (toggle && panel) {
+		toggle.addEventListener('click', function (event) {
+			event.stopPropagation();
+			panel.classList.toggle('open');
+		});
+		panel.addEventListener('click', function (event) {
+			event.stopPropagation();
+		});
+		document.addEventListener('click', function () {
+			panel.classList.remove('open');
+		});
+		panel.addEventListener('change', syncSelected);
+
+		var all = document.getElementById('spiderAll');
+		var none = document.getElementById('spiderNone');
+		if (all) {
+			all.addEventListener('click', function () {
+				panel.querySelectorAll('input[type=checkbox]').forEach(function (item) { item.checked = true; });
+				syncSelected();
+			});
+		}
+		if (none) {
+			none.addEventListener('click', function () {
+				panel.querySelectorAll('input[type=checkbox]').forEach(function (item) { item.checked = false; });
+				syncSelected();
+			});
+		}
+		syncSelected();
+	}
+
+	if (window.layui) {
+		layui.use(['form', 'laydate'], function () {
+			var laydate = layui.laydate;
+			layui.form.render('select');
+			laydate.render({ elem: '#spiderStart', type: 'date', format: 'yyyy-MM-dd' });
+			laydate.render({ elem: '#spiderEnd', type: 'date', format: 'yyyy-MM-dd' });
+		});
+	}
+});
+</script>
+
+{include file='common/foot.html'}

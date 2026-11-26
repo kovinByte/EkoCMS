@@ -1,0 +1,17 @@
+<!-- 分页 -->
+{eko:if({page:rows}>0)}
+<nav class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="分页">
+	<a href="{page:index}" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">首页</a>
+	<a href="{page:pre}" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">上一页</a>
+	<div class="flex flex-wrap items-center justify-center gap-2 [&_a]:inline-flex [&_a]:h-9 [&_a]:min-w-9 [&_a]:items-center [&_a]:justify-center [&_a]:rounded-sm [&_a]:border [&_a]:border-gray-200 [&_a]:bg-white [&_a]:px-2 [&_a]:text-sm [&_a]:text-gray-600 [&_a]:transition [&_a:hover]:border-blue-300 [&_a:hover]:bg-blue-50 [&_a:hover]:text-blue-600 [&_.page-num-current]:border-blue-600 [&_.page-num-current]:bg-blue-600 [&_.page-num-current]:text-white [&_.page-num-current:hover]:border-blue-700 [&_.page-num-current:hover]:bg-blue-700 [&_.page-num-current:hover]:text-white [&_.page-num]:no-underline">
+		{page:numbar}
+	</div>
+	<a href="{page:next}" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">下一页</a>
+	<a href="{page:last}" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">尾页</a>
+</nav>
+{else}
+<div class="mt-10 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white px-6 py-14 text-center">
+	<i class="fa-regular fa-folder-open text-4xl text-gray-300"></i>
+	<p class="mt-4 text-sm text-gray-500">未查询到任何数据</p>
+</div>
+{/eko:if}

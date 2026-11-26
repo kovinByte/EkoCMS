@@ -1,0 +1,26 @@
+<!-- 分类导航 -->
+<div class="flex flex-wrap items-center gap-2">
+	{eko:nav num=10 parent={sort:tcode}}
+		{eko:if([nav:i]==1)}
+			{eko:2if('{sort:scode}'=='{sort:tcode}')}
+				<a href="{sort:toplink}" class="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm">
+					全部 <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">{sort:toprows}</span>
+				</a>
+			{2else}
+				<a href="{sort:toplink}" class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-gray-600 transition hover:border-blue-300 hover:text-blue-600">
+					全部 <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">{sort:toprows}</span>
+				</a>
+			{/eko:2if}
+		{/eko:if}
+
+		{eko:if('[nav:scode]'=='{sort:scode}')}
+			<a href="[nav:link]" class="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm">
+				[nav:name] <span class="rounded-full bg-white/20 px-2 py-0.5 text-xs">[nav:rows]</span>
+			</a>
+		{else}
+			<a href="[nav:link]" class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm text-gray-600 transition hover:border-blue-300 hover:text-blue-600">
+				[nav:name] <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">[nav:rows]</span>
+			</a>
+		{/eko:if}
+	{/eko:nav}
+</div>

@@ -1,0 +1,154 @@
+{eko:if({eko:commentstatus})}
+<div class="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+	<div class="rounded-lg border border-gray-100 bg-white p-6 shadow-md md:p-8">
+		<h2 class="flex items-center gap-3 text-xl font-semibold text-gray-900">
+			<i class="fa-regular fa-comments text-blue-600"></i> 发表评论
+		</h2>
+		<form class="mt-6" onsubmit="return submitcomment(this);" data-action="{eko:commentaction}">
+			<textarea name="comment" id="commentInput" rows="4" class="w-full rounded-sm border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入评论内容"></textarea>
+
+			{eko:2if({eko:commentcodestatus})}
+			<div class="mt-4 flex flex-wrap items-center gap-3">
+				<input type="text" name="checkcode" id="checkcode" required class="h-10 w-40 rounded-sm border border-gray-200 bg-white px-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入验证码">
+				<img title="点击刷新" class="codeimg h-10 w-32 cursor-pointer rounded-sm border border-gray-200 object-cover" src="{eko:checkcode}" alt="验证码" onclick="this.src='{eko:checkcode}?'+Math.round(Math.random()*10);">
+			</div>
+			{/eko:2if}
+
+			<button type="submit" class="mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-sm bg-blue-600 px-6 text-base font-medium text-white transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:bg-blue-800">
+				<i class="fa-regular fa-paper-plane"></i> 提交评论
+			</button>
+		</form>
+
+		<div class="mt-10 border-t border-gray-100 pt-8">
+			<h2 class="flex items-center gap-3 text-xl font-semibold text-gray-900">
+				<i class="fa-regular fa-message text-blue-600"></i> 评论记录
+			</h2>
+			<a name="comment"></a>
+
+			<div class="mt-6 space-y-6">
+				{eko:comment contentid={content:id} num=20}
+				<div class="flex items-start gap-4">
+					<img class="size-10 shrink-0 rounded-full object-cover" src="[comment:headpic]" alt="[comment:nickname]">
+					<div class="min-w-0 flex-1">
+						<div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+							<span class="text-sm font-semibold text-gray-900">[comment:nickname]</span>
+							<span class="text-xs text-gray-400">[comment:date]</span>
+						</div>
+						<p class="mt-2 text-sm leading-7 text-gray-600">[comment:comment]</p>
+						<button type="button" class="replybtn mt-2 inline-flex items-center gap-1 rounded-sm bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500 transition hover:bg-blue-50 hover:text-blue-600" data-action="[comment:replyaction]">
+							<i class="fa-solid fa-reply"></i> 回复
+						</button>
+
+						{eko:commentsub}
+						<div class="mt-4 flex items-start gap-3 rounded-lg bg-gray-50 p-4">
+							<img class="size-8 shrink-0 rounded-full object-cover" src="[commentsub:headpic]" alt="[commentsub:nickname]">
+							<div class="min-w-0 flex-1">
+								<div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+									<span class="text-sm font-semibold text-gray-900">[commentsub:nickname]</span>
+									<span class="text-xs text-gray-400">[commentsub:date]</span>
+								</div>
+								<p class="mt-1 text-sm leading-7 text-gray-600">@[commentsub:pnickname] [commentsub:comment]</p>
+								<button type="button" class="replybtn mt-1 inline-flex items-center gap-1 text-xs font-medium text-gray-400 transition hover:text-blue-600" data-action="[commentsub:replyaction]">
+									<i class="fa-solid fa-reply"></i> 回复
+								</button>
+							</div>
+						</div>
+						{/eko:commentsub}
+					</div>
+				</div>
+				{/eko:comment}
+			</div>
+
+			{eko:2if({page:rows}>0)}
+			<nav class="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label="评论分页">
+				<a href="{page:index}#comment" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">首页</a>
+				<a href="{page:pre}#comment" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">上一页</a>
+				<a href="{page:next}#comment" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">下一页</a>
+				<a href="{page:last}#comment" class="inline-flex h-9 items-center justify-center rounded-sm border border-gray-200 bg-white px-3 text-sm text-gray-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600">尾页</a>
+			</nav>
+			{2else}
+			<div class="mt-8 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
+				<i class="fa-regular fa-message text-3xl text-gray-300"></i>
+				<p class="mt-3 text-sm text-gray-500">暂无评论，快来抢沙发吧</p>
+			</div>
+			{/eko:2if}
+		</div>
+	</div>
+</div>
+
+<!-- 评论回复弹框 -->
+<div id="replyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900/60 p-4">
+	<div class="w-full max-w-lg rounded-lg bg-white shadow-xl">
+		<div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+			<h3 class="text-lg font-semibold text-gray-900">回复评论</h3>
+			<button type="button" class="replyClose flex size-9 items-center justify-center rounded-sm text-gray-400 transition hover:bg-gray-100 hover:text-gray-600" aria-label="关闭">
+				<i class="fa-solid fa-xmark"></i>
+			</button>
+		</div>
+		<form onsubmit="return submitcomment(this);" data-action="" id="replyform">
+			<div class="px-6 py-5">
+				<textarea name="comment" id="replyComment" rows="4" class="w-full rounded-sm border border-gray-200 bg-white px-4 py-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入评论内容"></textarea>
+				{eko:2if({eko:commentcodestatus})}
+				<div class="mt-4 flex flex-wrap items-center gap-3">
+					<input type="text" name="checkcode" required class="h-10 w-40 rounded-sm border border-gray-200 bg-white px-3 text-base text-gray-800 placeholder:text-gray-400 focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-600/20" placeholder="请输入验证码">
+					<img title="点击刷新" class="codeimg h-10 w-32 cursor-pointer rounded-sm border border-gray-200 object-cover" src="{eko:checkcode}" alt="验证码" onclick="this.src='{eko:checkcode}?'+Math.round(Math.random()*10);">
+				</div>
+				{/eko:2if}
+			</div>
+			<div class="flex items-center justify-end gap-3 border-t border-gray-100 px-6 py-4">
+				<button type="button" class="replyClose inline-flex h-10 items-center justify-center rounded-sm border border-gray-200 bg-white px-5 text-base font-medium text-gray-600 transition hover:bg-gray-50">关闭</button>
+				<button type="submit" class="inline-flex h-10 items-center justify-center rounded-sm bg-blue-600 px-5 text-base font-medium text-white transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg">提交评论</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+$(function () {
+	$('.replybtn').on('click', function () {
+		var url = $(this).data('action');
+		$('#replyform').data('action', url);
+		$('#replyModal').removeClass('hidden').addClass('flex');
+	});
+
+	$('.replyClose').on('click', function () {
+		$('#replyModal').addClass('hidden').removeClass('flex');
+	});
+});
+
+function submitcomment(obj) {
+	var url = $(obj).data('action');
+	var comment = $(obj).find('[name="comment"]').val();
+	var checkcode = $(obj).find('[name="checkcode"]').val();
+
+	$.ajax({
+		type: 'POST',
+		url: url,
+		dataType: 'json',
+		data: {
+			comment: comment,
+			checkcode: checkcode
+		},
+		success: function (response) {
+			if (response.code) {
+				alert(response.data);
+				$(obj)[0].reset();
+				$('#replyModal').addClass('hidden').removeClass('flex');
+				window.location.reload();
+			} else {
+				if (response.tourl != '') {
+					if (confirm(response.data + '是否立即跳转登录？')) {
+						location.href = response.tourl;
+					}
+				}
+				$('.codeimg').click();
+			}
+		},
+		error: function () {
+			alert('返回数据异常！');
+		}
+	});
+	return false;
+}
+</script>
+{/eko:if}

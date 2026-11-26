@@ -1,0 +1,331 @@
+{include file='common/head.html'}
+
+<div class="layui-body">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+		  <ul class="layui-tab-title">
+		    <li class="{if([$active_tab]=='t1')}layui-this{/if}" lay-id="t1">数据库管理</li>
+		    <li class="{if([$active_tab]=='t2')}layui-this{/if}" lay-id="t2">数据库互转</li>
+		  </ul>
+		  <div class="layui-tab-content">
+		  	   <div class="layui-tab-item {if([$active_tab]=='t1')}layui-show{/if}">
+		  	   		<form action="{url./admin/Database/mod}" method="post" class="eko-ajax" data-after="reload">
+		  	   			<input type="hidden" name="formcheck" value="{$formcheck}" > 
+		  	   		{if([$db]=='mysql')}
+				  	   	<table class="layui-table">
+				  	   		<thead>
+		                        <tr>
+		                            <th>选择</th>
+		                            <th>表名称</th>
+		                            <th>表引擎</th>
+		                            <th>编码</th>
+		                            <th>版本</th>
+		                            <th>行数</th>
+		                            <th>表创建时间</th>
+		                            <th>最后更新时间</th>
+		                            <th>大小</th>
+		                            <th>多余</th>
+		                            
+		                        </tr>
+		                    </thead>
+		                    {php}$sum1 = 0; $sum2 = 0;{/php}
+		                    <tbody>
+		                    {foreach $tables(key,value,num)}
+		                        <tr>
+		                            <td><input type="checkbox" class="checkbox checkitem" name="list[]" value="[value->Name]"></td>
+		                            <td>[value->Name]</td>
+		                            <td>[value->Engine]</td>
+		                            <td>[value->Collation]</td>
+		                            <td>[value->Version]</td>
+		                            <td>[value->Rows]</td>
+		                            <td>[value->Create_time]</td>
+		                            <td>[value->Update_time]</td>
+		                            {php}
+		                                $size = round(($value->Data_length + $value->Index_length)/1024,2);
+		                                $sum1 += $size; 
+		                            {/php}
+		                            <td>{php}echo $size{/php} KB</td>
+		                            <td>
+		                            {if($value->Data_free)}
+		                                {php}
+		                                    $free = round($value->Data_free/1024,2);
+		                                    echo $free.' KB';
+		                                    $sum2 += $free; 
+		                                {/php}
+		                            {else}
+		                                -
+		                            {/if}
+		                            </td>
+		                        </tr>
+		                    {/foreach}
+		                        <tr>
+		                            <td><input type="checkbox" class="checkbox" id="checkall" title="全选"></td>
+		                            <td>[num] 张表</td>
+		                            <td></td>
+		                            <td></td>
+		                            <td></td>
+		                            <td></td>
+		                            <td></td>
+		                            <td>总计：</td>
+		                            <td>{php}echo $sum1{/php} KB</td>
+		                            <td>{php}echo $sum2?:0{/php} KB</td>
+		                        </tr>
+		                    </tbody>
+				  	   	</table>
+				  	   	 {if([fun=check_level('mod')])}
+			                <button class="layui-btn" lay-submit type="submit" name="submit" value="yh">优化</button>
+			                <button class="layui-btn" lay-submit type="submit" name="submit" value="xf">修复</button>
+			                <button class="layui-btn" lay-submit type="submit" name="submit" value="bf">备份表</button>
+			                <button class="layui-btn" lay-submit type="submit" name="submit" value="bfdb">备份数据库</button>
+			            {/if}
+			  	   	{/if}
+			  	   	{if([$db]=='sqlite')}
+		            	<button class="layui-btn" lay-submit type="submit" name="submit" value="bfsqlite" >备份</button>
+		            	<p class="layui-text">注意：Sqlite数据库只支持直接备份。</p>
+		            {/if}
+			  	   	</form>
+			  	</div>
+			  	<div class="layui-tab-item {if([$active_tab]=='t2')}layui-show{/if}">
+			  		<form id="convertForm" class="layui-form" style="padding:20px 20px 0;" onsubmit="return false;">
+			  			<input type="hidden" name="formcheck" value="{$formcheck}" >
+			  			<div class="layui-form-item">
+			  				<label class="layui-form-label">当前数据库</label>
+			  				<div class="layui-input-block">
+			  					<div class="layui-form-mid" style="padding-top:0;">
+			  						<span class="layui-badge layui-bg-blue">{if([$db]=='mysql')}MySQL{else}SQLite{/if}</span>
+			  						<span class="layui-word-aux">将转换为 {if([$db]=='mysql')}SQLite 数据库文件（.db）{else}MySQL 数据库文件（.sql）{/if}</span>
+			  					</div>
+			  				</div>
+			  			</div>
+			  			<div class="layui-form-item">
+			  				<label class="layui-form-label">保存目录</label>
+			  				<div class="layui-input-block">
+			  					<input type="text" id="saveDir" name="save_dir" value="{$save_dir}" class="layui-input" placeholder="相对于站点根目录，如 data/backup/sql/">
+			  					<div class="layui-word-aux">目录不存在时会自动创建，留空默认保存到 data/backup/sql/。建议保存在 data/ 目录内，避免数据库文件被外部下载。</div>
+			  				</div>
+			  			</div>
+			  			<div class="layui-form-item">
+			  				<label class="layui-form-label">文件名称</label>
+			  				<div class="layui-input-block">
+			  					<input type="text" id="saveName" name="save_name" value="" class="layui-input" placeholder="留空自动生成，扩展名为 {if([$db]=='mysql')}.db{else}.sql{/if}">
+			  				</div>
+			  			</div>
+			  			<div class="layui-form-item">
+			  				<div class="layui-input-block">
+			  					{if([fun=check_level('mod')])}
+			  					<button type="button" id="convertBtn" class="layui-btn">数据互转</button>
+			  					{/if}
+			  				</div>
+			  			</div>
+			  		</form>
+			  		<div id="convertPanel" style="display:none;padding:0 20px;">
+			  			<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:13px;color:#666;">
+			  				<span id="convertStatus">准备中...</span>
+			  				<span id="convertPercent">0%</span>
+			  			</div>
+			  			<div style="height:18px;background:#e6e6e6;border-radius:9px;overflow:hidden;">
+			  				<div id="convertBar" style="height:100%;width:0;background:#1e9fff;border-radius:9px;transition:width .25s ease;"></div>
+			  			</div>
+			  			<div id="convertDetail" class="layui-word-aux" style="margin-top:8px;"></div>
+			  		</div>
+			  		<div id="convertResult" style="padding:0 20px;"></div>
+			  		<blockquote class="layui-elem-quote" style="margin:20px;">
+			  			<p>使用说明：</p>
+			  			<p>1. {if([$db]=='mysql')}将当前 MySQL 数据转换为 SQLite 数据库文件，可直接用于 SQLite 站点的备份、恢复。{else}将当前 SQLite 数据转换为 MySQL 导入脚本，可直接用于 MySQL 数据库的备份、恢复。{/if}</p>
+			  			<p>2. 转换只读取当前数据库，不会修改当前站点数据库。</p>
+			  			<p>3. 转换在当前页面进行并实时显示进度，数据量较大时请保持页面开启，不要关闭或刷新。</p>
+			  		</blockquote>
+			  	</div>
+		  </div>
+	  </div>
+</div>
+
+<script type="text/javascript">
+(function () {
+	var btn = document.getElementById('convertBtn');
+	if (!btn) return;
+
+	var form = document.getElementById('convertForm');
+	var panel = document.getElementById('convertPanel');
+	var bar = document.getElementById('convertBar');
+	var percentEl = document.getElementById('convertPercent');
+	var statusEl = document.getElementById('convertStatus');
+	var detailEl = document.getElementById('convertDetail');
+	var resultEl = document.getElementById('convertResult');
+	var actionUrl = '{url./admin/Database/convert}';
+	var running = false;
+
+	function esc(text) {
+		return String(text === undefined || text === null ? '' : text)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
+	function formatSize(bytes) {
+		bytes = Number(bytes) || 0;
+		if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+		if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+		return bytes + ' B';
+	}
+
+	function setProgress(percent, text) {
+		percent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+		bar.style.width = percent + '%';
+		percentEl.innerHTML = percent + '%';
+		if (text) statusEl.innerHTML = esc(text);
+	}
+
+	function post(data, timeoutMs) {
+		var body = new URLSearchParams();
+		var names = Object.keys(data);
+		for (var i = 0; i < names.length; i++) {
+			body.append(names[i], data[names[i]]);
+		}
+		var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+		var options = {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			body: body.toString()
+		};
+		if (controller) {
+			options.signal = controller.signal;
+		}
+		return new Promise(function (resolve, reject) {
+			var timer = null;
+			if (controller && timeoutMs > 0) {
+				timer = setTimeout(function () {
+					controller.abort();
+				}, timeoutMs);
+			}
+			fetch(actionUrl, options).then(function (response) {
+				return response.text();
+			}).then(function (text) {
+				if (timer) clearTimeout(timer);
+				try {
+					resolve(JSON.parse(text));
+				} catch (e) {
+					reject(new Error('服务器返回数据异常，请刷新页面后重试'));
+				}
+			}).catch(function (err) {
+				if (timer) clearTimeout(timer);
+				if (err && err.name === 'AbortError') {
+					reject(new Error('请求超时，服务器长时间未响应，请检查服务器状态或稍后重试'));
+				} else {
+					reject(err);
+				}
+			});
+		});
+	}
+
+	function render(p) {
+		var dir = p.direction === 'sqlite2mysql' ? 'SQLite → MySQL' : 'MySQL → SQLite';
+		setProgress(p.percent, dir + ' 转换中');
+		var parts = [];
+		parts.push('数据表：' + (p.tables_done || 0) + ' / ' + (p.table_total || 0));
+		if (p.table_name) {
+			parts.push('当前表：' + p.table_name);
+		}
+		parts.push('已转换记录：' + (p.table_rows || 0) + (p.rows_total ? ' / ' + p.rows_total : ''));
+		parts.push('已用时：' + (p.elapsed || 0) + ' 秒');
+		detailEl.innerHTML = esc(parts.join('　|　'));
+	}
+
+	function sleep(ms) {
+		return new Promise(function (resolve) {
+			setTimeout(resolve, ms);
+		});
+	}
+
+	function run() {
+		if (running) return;
+		running = true;
+		btn.disabled = true;
+		btn.className = 'layui-btn layui-btn-disabled';
+		resultEl.innerHTML = '';
+		detailEl.innerHTML = '';
+		panel.style.display = 'block';
+		setProgress(0, '正在准备转换...');
+
+		var formcheck = form.querySelector('input[name="formcheck"]').value;
+		var saveDir = document.getElementById('saveDir').value;
+		var saveName = document.getElementById('saveName').value;
+		var slowTimer = setTimeout(function () {
+			setProgress(0, '正在读取数据库结构并统计记录数，请稍候...');
+		}, 5000);
+
+		post({
+			convert_action: 'start',
+			formcheck: formcheck,
+			save_dir: saveDir,
+			save_name: saveName
+		}, 120000).then(function (res) {
+			clearTimeout(slowTimer);
+			if (!res || res.code != 1) {
+				throw new Error(res && typeof res.data === 'string' ? res.data : '启动转换失败');
+			}
+			var job = res.data && res.data.job;
+			if (!job) {
+				throw new Error('服务端接口未更新，请确认已上传最新的数据库互转程序文件后重试');
+			}
+			if (res.data.progress) {
+				render(res.data.progress);
+			}
+
+			function next() {
+				return sleep(30).then(function () {
+					return post({
+						convert_action: 'step',
+						job: job,
+						formcheck: formcheck
+					}, 60000);
+				}).then(function (r) {
+					if (!r || r.code != 1) {
+						throw new Error(r && typeof r.data === 'string' ? r.data : '转换失败');
+					}
+					if (!r.data || typeof r.data !== 'object' || typeof r.data.percent === 'undefined') {
+						throw new Error('服务端返回的转换进度异常，请确认已上传最新的数据库互转程序文件');
+					}
+					var p = r.data;
+					render(p);
+					if (!p.finished) {
+						return next();
+					}
+					return p;
+				});
+			}
+			return next();
+		}).catch(function (err) {
+			clearTimeout(slowTimer);
+			throw err;
+		}).then(function (p) {
+			setProgress(100, '转换完成');
+			detailEl.innerHTML = '';
+			resultEl.innerHTML = '<blockquote class="layui-elem-quote" style="margin-bottom:0;">'
+				+ '<p><b>数据互转成功</b></p>'
+				+ '<p>生成文件：' + esc(p.file) + '</p>'
+				+ '<p>数据表：' + (p.table_total || 0) + ' 张，记录：' + (p.table_rows || 0) + ' 条，文件大小：' + formatSize(p.size) + '，用时：' + (p.elapsed || 0) + ' 秒</p>'
+				+ '<p class="layui-word-aux">该文件可直接用于对应数据库的备份与恢复。</p>'
+				+ '</blockquote>';
+		}).catch(function (err) {
+			setProgress(0, '转换失败');
+			resultEl.innerHTML = '<blockquote class="layui-elem-quote layui-quote-nm" style="border-color:#ff5722;margin-bottom:0;">'
+				+ '<p style="color:#ff5722;">' + esc(err && err.message ? err.message : '转换失败，请稍后重试') + '</p>'
+				+ '</blockquote>';
+		}).then(function () {
+			running = false;
+			btn.disabled = false;
+			btn.className = 'layui-btn';
+		});
+	}
+
+	btn.onclick = run;
+})();
+</script>
+
+{include file='common/foot.html'}

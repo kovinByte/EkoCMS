@@ -1,0 +1,36 @@
+{include file=comm/head.html}
+
+{include file=comm/top.html}
+
+<div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+	<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+		{eko:list num=8 order=sorting}
+		<a href="[list:link]" class="group overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+			<div class="relative aspect-video overflow-hidden bg-gray-100">
+				{eko:if('[list:ico]'!='')}
+				<img src="[list:ico]" alt="[list:title]" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+				{else}
+				<div class="flex h-full w-full items-center justify-center bg-blue-50 text-blue-300">
+					<i class="fa-regular fa-image text-5xl"></i>
+				</div>
+				{/eko:if}
+				<div class="absolute inset-0 bg-gradient-to-t from-blue-950/70 via-transparent to-transparent opacity-0 transition group-hover:opacity-100"></div>
+				<span class="absolute bottom-4 left-4 inline-flex items-center gap-1 rounded-full bg-blue-600 px-3 py-1 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
+					查看案例 <i class="fa-solid fa-arrow-right"></i>
+				</span>
+			</div>
+			<div class="p-5">
+				<h2 class="text-lg font-semibold text-gray-900 transition group-hover:text-blue-600">[list:title lencn=22]</h2>
+				<p class="mt-2 line-clamp-2 text-sm leading-6 text-gray-500">[list:content drophtml=1 dropblank=1 len=70]</p>
+				<span class="mt-4 inline-flex items-center gap-1 text-xs text-gray-400">
+					<i class="fa-regular fa-calendar"></i> [list:date style=Y-m-d]
+				</span>
+			</div>
+		</a>
+		{/eko:list}
+	</div>
+
+	{include file=comm/page.html}
+</div>
+
+{include file=comm/foot.html}

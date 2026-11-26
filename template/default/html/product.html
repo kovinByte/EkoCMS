@@ -1,0 +1,138 @@
+{include file=comm/head.html}
+
+{include file=comm/top.html}
+
+<div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+	<div class="grid gap-10 lg:grid-cols-2">
+		<!-- 图片画廊 -->
+		<div>
+			<div class="swiper productGallery overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide">
+						{eko:if('[content:ico]'!='')}
+						<img src="{content:ico}" alt="{content:title}" class="aspect-square w-full object-cover">
+						{else}
+						<div class="flex aspect-square w-full items-center justify-center bg-blue-50 text-blue-300">
+							<i class="fa-regular fa-image text-6xl"></i>
+						</div>
+						{/eko:if}
+					</div>
+					{eko:pics num=10 id={content:id}}
+					<div class="swiper-slide">
+						<img src="[pics:src]" alt="[pics:title]" class="aspect-square w-full object-cover">
+					</div>
+					{/eko:pics}
+				</div>
+				<button type="button" class="product-prev absolute left-3 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-md transition hover:bg-white hover:text-blue-600" aria-label="上一张">
+					<i class="fa-solid fa-chevron-left"></i>
+				</button>
+				<button type="button" class="product-next absolute right-3 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-md transition hover:bg-white hover:text-blue-600" aria-label="下一张">
+					<i class="fa-solid fa-chevron-right"></i>
+				</button>
+			</div>
+
+			<div class="swiper productThumbs mt-3 [&_.swiper-slide-thumb-active]:border-blue-600">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide cursor-pointer overflow-hidden rounded-lg border-2 border-transparent bg-gray-100 transition">
+						<img src="{content:ico}" alt="{content:title}" class="aspect-square w-full object-cover">
+					</div>
+					{eko:pics num=10 id={content:id}}
+					<div class="swiper-slide cursor-pointer overflow-hidden rounded-lg border-2 border-transparent bg-gray-100 transition">
+						<img src="[pics:src]" alt="[pics:title]" class="aspect-square w-full object-cover">
+					</div>
+					{/eko:pics}
+				</div>
+			</div>
+		</div>
+
+		<!-- 产品信息 -->
+		<div>
+			<span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold tracking-wide text-blue-600">
+				<i class="fa-solid fa-box-open"></i> PRODUCT
+			</span>
+			<h1 class="mt-4 text-2xl font-bold leading-snug tracking-tight text-gray-900 md:text-3xl">{content:title}</h1>
+
+			<div class="mt-5 rounded-lg bg-blue-50 px-5 py-4">
+				<span class="text-sm text-gray-500">参考价格</span>
+				<p class="mt-1 text-3xl font-bold text-blue-600">￥{content:ext_price}</p>
+			</div>
+
+			<dl class="mt-6 divide-y divide-gray-100 rounded-lg border border-gray-100 bg-white text-sm shadow-sm">
+				<div class="flex items-center justify-between px-5 py-3.5">
+					<dt class="text-gray-400">产品类型</dt>
+					<dd class="font-medium text-gray-700">{content:ext_type}</dd>
+				</div>
+				<div class="flex items-center justify-between px-5 py-3.5">
+					<dt class="text-gray-400">产品颜色</dt>
+					<dd class="font-medium text-gray-700">{content:ext_color}</dd>
+				</div>
+				<div class="flex items-center justify-between px-5 py-3.5">
+					<dt class="text-gray-400">上架时间</dt>
+					<dd class="font-medium text-gray-700">{content:date style=Y-m-d}</dd>
+				</div>
+				<div class="flex items-center justify-between px-5 py-3.5">
+					<dt class="text-gray-400">浏览次数</dt>
+					<dd class="font-medium text-gray-700">{content:visits}</dd>
+				</div>
+			</dl>
+
+			<div class="mt-6 flex flex-wrap gap-3">
+				{eko:sort scode=10}
+				<a href="[sort:link]" class="inline-flex h-11 items-center justify-center gap-2 rounded-sm bg-blue-600 px-7 text-base font-medium text-white shadow-md transition duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg">
+					<i class="fa-regular fa-comment-dots"></i> 立即咨询
+				</a>
+				{/eko:sort}
+				<a href="tel:{eko:companyphone}" class="inline-flex h-11 items-center justify-center gap-2 rounded-sm border border-blue-600 bg-white px-7 text-base font-medium text-blue-600 transition hover:bg-blue-50">
+					<i class="fa-solid fa-phone"></i> 电话咨询
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- 产品详情 -->
+	<div class="mt-12 rounded-lg border border-gray-100 bg-white p-6 shadow-md md:p-10">
+		<h2 class="flex items-center gap-3 border-b border-gray-100 pb-4 text-xl font-semibold text-gray-900">
+			<i class="fa-solid fa-sliders text-blue-600"></i> 产品详情
+		</h2>
+		<div class="mt-6">
+			{include file=comm/prose.html}
+		</div>
+	</div>
+
+	<div class="mt-6 grid gap-3 text-sm text-gray-500 [&_a]:text-gray-600 [&_a]:transition [&_a:hover]:text-blue-600 md:grid-cols-2">
+		<div class="rounded-lg border border-gray-100 bg-white p-4">
+			<span class="text-gray-400">上一篇：</span>{content:precontent}
+		</div>
+		<div class="rounded-lg border border-gray-100 bg-white p-4 md:text-right">
+			<span class="text-gray-400">下一篇：</span>{content:nextcontent}
+		</div>
+	</div>
+</div>
+
+{include file=comm/comment.html}
+
+<script>
+$(function () {
+	var thumbs = new Swiper('.productThumbs', {
+		slidesPerView: 4,
+		spaceBetween: 12,
+		watchSlidesProgress: true,
+		breakpoints: {
+			768: { slidesPerView: 5 }
+		}
+	});
+
+	new Swiper('.productGallery', {
+		spaceBetween: 0,
+		navigation: {
+			nextEl: '.product-next',
+			prevEl: '.product-prev'
+		},
+		thumbs: {
+			swiper: thumbs
+		}
+	});
+});
+</script>
+
+{include file=comm/foot.html}

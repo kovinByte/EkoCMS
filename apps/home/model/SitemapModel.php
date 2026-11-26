@@ -1,0 +1,217 @@
+<?php
+/**
+ *  Sitemap模型
+ */
+namespace app\home\model;
+
+use core\basic\Model;
+
+class SitemapModel extends Model
+{
+
+    // 分类栏目列表
+    public function getSorts()
+    {
+        $fields = array(
+            'a.id',
+            'a.pcode',
+            'a.scode',
+            'a.name',
+            'a.filename',
+            'a.outlink',
+            'b.type',
+            'b.urlname'
+        );
+        $join = array(
+            'ek_model b',
+            'a.mcode=b.mcode',
+            'LEFT'
+        );
+        $result = parent::table('ek_content_sort a')->field($fields)
+            ->where('a.status=1')
+            ->where("a.acode='" . get_lg() . "'")
+            ->join($join)
+            ->order('a.pcode,a.sorting,a.id')
+            ->select();
+        return $result;
+    }
+
+    // 指定列表内容
+    public function getSortContent($scode)
+    {
+        $fields = array(
+            'a.id',
+            'a.filename',
+            'a.outlink',
+            'a.date',
+            'c.type',
+            'c.urlname',
+            'b.scode',
+            'b.filename as sortfilename'
+        );
+        $join = array(
+            array(
+                'ek_content_sort b',
+                'a.scode=b.scode',
+                'LEFT'
+            ),
+            array(
+                'ek_model c',
+                'b.mcode=c.mcode',
+                'LEFT'
+            )
+        );
+        
+        $where = array(
+            'a.status=1',
+            'c.type=2',
+            "a.date<'" . date('Y-m-d H:i:s') . "'"
+        );
+        
+        return parent::table('ek_content a')->field($fields)
+            ->where("a.scode='$scode'")
+            ->where($where)
+            ->join($join)
+            ->select();
+    }
+
+    public function countOutputContent($now)
+    {
+        return $this->outputContentQuery($now)->count();
+    }
+
+    public function getContentPage($now, $offset, $limit)
+    {
+        $offset = (int) $offset;
+        $limit = (int) $limit;
+        if ($offset < 0 || $limit < 1) {
+            return array();
+        }
+        $result = $this->outputContentQuery($now)
+            ->order('a.id ASC')
+            ->limit($offset . ',' . $limit)
+            ->select();
+        if (! $result) {
+            return array();
+        }
+        return $result;
+    }
+
+    private function outputContentQuery($now)
+    {
+        if (! is_string($now) || ! preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $now)) {
+            $now = date('Y-m-d H:i:s');
+        }
+        $fields = array(
+            'a.id',
+            'a.filename',
+            'a.outlink',
+            'a.date',
+            'c.type',
+            'c.urlname',
+            'b.scode',
+            'b.filename as sortfilename'
+        );
+        $join = array(
+            array(
+                'ek_content_sort b',
+                'a.scode=b.scode',
+                'LEFT'
+            ),
+            array(
+                'ek_model c',
+                'b.mcode=c.mcode',
+                'LEFT'
+            )
+        );
+        $where = array(
+            'a.status' => 1,
+            'b.status' => 1,
+            'b.acode' => get_lg(),
+            'c.type' => 2
+        );
+        return parent::table('ek_content a')->field($fields)
+            ->where($where)
+            ->where("a.outlink=''")
+            ->where("b.outlink=''")
+            ->where("a.date<'" . $now . "'")
+            ->join($join);
+    }
+
+    // llms.txt栏目列表，较sitemap额外取栏目描述用于生成链接说明
+    public function getLlmsSorts()
+    {
+        $fields = array(
+            'a.id',
+            'a.pcode',
+            'a.scode',
+            'a.name',
+            'a.filename',
+            'a.outlink',
+            'a.description',
+            'b.type',
+            'b.urlname'
+        );
+        $join = array(
+            'ek_model b',
+            'a.mcode=b.mcode',
+            'LEFT'
+        );
+        $where = array(
+            'a.status' => 1,
+            'a.acode' => get_lg()
+        );
+        return parent::table('ek_content_sort a')->field($fields)
+            ->where($where)
+            ->join($join)
+            ->order('a.pcode,a.sorting,a.id')
+            ->select();
+    }
+
+    // llms.txt指定栏目内容，按置顶及发布时间倒序取前若干条，控制输出规模
+    public function getLlmsSortContent($scode, $num)
+    {
+        $num = (int) $num;
+        if ($num < 1) {
+            return array();
+        }
+
+        $fields = array(
+            'a.id',
+            'a.title',
+            'a.filename',
+            'a.outlink',
+            'a.description',
+            'a.date',
+            'c.type',
+            'c.urlname',
+            'b.scode',
+            'b.filename as sortfilename'
+        );
+        $join = array(
+            array(
+                'ek_content_sort b',
+                'a.scode=b.scode',
+                'LEFT'
+            ),
+            array(
+                'ek_model c',
+                'b.mcode=c.mcode',
+                'LEFT'
+            )
+        );
+
+        $where = array(
+            'a.scode' => $scode,
+            'a.status' => 1,
+            'c.type' => 2
+        );
+        return parent::table('ek_content a')->field($fields)
+            ->where($where)
+            ->where("a.date<'" . date('Y-m-d H:i:s') . "'")
+            ->join($join)
+            ->order('a.istop DESC,a.date DESC,a.id DESC')
+            ->limit($num)
+            ->select();
+    }
+}

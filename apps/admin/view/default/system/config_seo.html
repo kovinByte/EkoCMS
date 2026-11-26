@@ -1,0 +1,728 @@
+{include file='common/head.html'}
+
+<div class="layui-body">
+	<div class="layui-tab layui-tab-brief" lay-filter="tab">
+	  <ul class="layui-tab-title">
+	    <li class="layui-this" lay-id="t3">百度接口</li>
+	    <li  lay-id="t12">IndexNow推送</li>
+	    <li  lay-id="t14">结构化数据</li>
+	    <li  lay-id="t13">llms.txt</li>
+	    <li  lay-id="t7">URL规则</li>
+	    <li  lay-id="t8">标题样式</li>
+	  </ul>
+		  <div class="layui-tab-content">
+		  	   <div class="layui-tab-item layui-show">
+                <form action="{url./admin/Config/index}" method="post" class="layui-form eko-ajax" data-after="reload">
+                    <input type="hidden" name="formcheck" value="{$formcheck}" >
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">普通收录token</label>
+		                     <div class="layui-input-inline">
+		                     	<input type="text" name="baidu_zz_token"  value="{$configs.baidu_zz_token.value}" placeholder="请输入普通收录token"  class="layui-input">
+		                     </div>
+		                     <span class="layui-icon layui-icon-about tips" data-content="请到百度站长中心获取！"></span>
+		                </div>
+
+		               <div class="layui-form-item">
+		                     <label class="layui-form-label">快速收录token</label>
+		                     <div class="layui-input-inline">
+		                     	<input type="text" name="baidu_ks_token"  value="{$configs.baidu_ks_token.value}" placeholder="请输入快速收录token"  class="layui-input">
+		                     </div>
+		                     <span class="layui-icon layui-icon-about tips" data-content="请到百度站长中心获取！"></span>
+		               </div>
+
+
+		                <div class="layui-form-item">
+							 <div class="layui-input-block">
+							    <button class="layui-btn" lay-submit name="submit" value="baidu">立即提交</button>
+							    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							 </div>
+						</div>
+	              </form>
+		  	   </div>
+
+                <div class="layui-tab-item">
+                    <form action="{url./admin/Config/index}" method="post" class="layui-form eko-ajax" data-after="reload">
+                        <input type="hidden" name="formcheck" value="{$formcheck}" >
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">推送密钥</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="indexnow_key" name="indexnow_key"  value="{$configs.indexnow_key.value}" placeholder="8-128位字母、数字或连字符"  class="layui-input">
+		                     </div>
+		                     <div class="layui-input-inline" style="width:auto;">
+                            <button type="button" class="layui-btn layui-btn-primary" id="indexnowKeyBtn">生成密钥</button>
+		                     </div>
+		                     <span class="layui-icon layui-icon-about tips" data-content="提交后自动在网站根目录生成密钥文件，一次推送即可同时通知必应等IndexNow参与引擎！"></span>
+		                </div>
+
+		               <div class="layui-form-item">
+		                     <label class="layui-form-label">密钥文件地址</label>
+		                     <div class="layui-input-inline" style="width:480px;">
+                            <input type="text" id="indexnow_key_location" name="indexnow_key_location"  value="{$configs.indexnow_key_location.value}" placeholder="留空则使用网站根目录下的密钥文件"  class="layui-input">
+		                     </div>
+		                     <span class="layui-icon layui-icon-about tips" data-content="可填相对路径或本站完整URL（须与推送页面同域），文件名必须为「推送密钥.txt」（如 /static/你的密钥.txt）。不支持跨域远程地址。变更推送密钥并提交后会自动清空此处；留空则使用网站根目录密钥文件！"></span>
+		               </div>
+
+
+		                <div class="layui-form-item">
+							 <div class="layui-input-block">
+							    <button class="layui-btn" lay-submit name="submit" value="indexnow">立即提交</button>
+							    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							 </div>
+						</div>
+	              </form>
+                </div>
+
+                <div class="layui-tab-item">
+                    <form action="{url./admin/Config/index}" method="post" class="eko-ajax jld-form" data-after="reload">
+                        <input type="hidden" name="formcheck" value="{$formcheck}" >
+                        <div class="jld-page">
+                            <h2 class="jld-title">结构化数据</h2>
+                            <div class="jld-tips">
+                                <p>开启后，系统将自动把网站的结构化数据标记为 JSON-LD 格式，并按照下方设置插入到 head 或 body 的底部，以便搜索引擎更好的理解网站内容。</p>
+                                <p>关于 Google 支持的结构化数据标记，请参考文档：<a href="https://developers.google.com/search/docs/appearance/structured-data/search-gallery" target="_blank" rel="noopener">https://developers.google.com/search/docs/appearance/structured-data/search-gallery</a></p>
+                            </div>
+
+                            <div class="jld-field">
+                                <label class="jld-label">开启结构化数据标记</label>
+                                <div class="jld-radios">
+                                    <label><input type="radio" name="jld_open" value="0" {if([$configs.jld_open.value]!=1)} checked="checked" {/if}> 否</label>
+                                    <label><input type="radio" name="jld_open" value="1" {if([$configs.jld_open.value]==1)} checked="checked" {/if}> 是</label>
+                                </div>
+                            </div>
+
+                            <div id="jldMain" class="{if([$configs.jld_open.value]!=1)}jld-hide{/if}">
+                                <div class="jld-field">
+                                    <label class="jld-label">代码渲染位置</label>
+                                    <div class="jld-radios">
+                                        <label><input type="radio" name="jld_pos" value="head" {if([$configs.jld_pos.value]=='head')} checked="checked" {/if}> head内底部</label>
+                                        <label><input type="radio" name="jld_pos" value="body" {if([$configs.jld_pos.value]!='head')} checked="checked" {/if}> body内底部</label>
+                                    </div>
+                                </div>
+
+                                <div class="jld-cols">
+                                    <div class="jld-col">
+                                        <div class="jld-card">
+                                            <div class="jld-card-head">通用设置</div>
+                                            <div class="jld-card-body">
+                                                <div class="jld-field">
+                                                    <label class="jld-label">关于页面</label>
+                                                    <select name="jld_about" class="jld-control">{$jld_about_options}</select>
+                                                </div>
+                                                <div class="jld-field">
+                                                    <label class="jld-label">联系页面</label>
+                                                    <select name="jld_contact" class="jld-control">{$jld_contact_options}</select>
+                                                </div>
+                                                <div class="jld-checks">
+                                                    <label class="jld-check"><input type="checkbox" name="jld_home" value="1" {if([$configs.jld_home.value]!=0)} checked="checked" {/if}> 网站结构(首页)</label>
+                                                    <label class="jld-check"><input type="checkbox" name="jld_search" value="1" {if([$configs.jld_search.value]!=0)} checked="checked" {/if}> 站点搜索链接</label>
+                                                    <label class="jld-check"><input type="checkbox" name="jld_author" value="1" id="jldAuthorSwitch" {if([$configs.jld_author.value]!=0)} checked="checked" {/if}> 作者</label>
+                                                    <label class="jld-check"><input type="checkbox" name="jld_breadcrumb" value="1" {if([$configs.jld_breadcrumb.value]!=0)} checked="checked" {/if}> 面包屑</label>
+                                                    <label class="jld-check"><input type="checkbox" name="jld_comment" value="1" {if([$configs.jld_comment.value]!=0)} checked="checked" {/if}> 评论</label>
+                                                </div>
+                                                <div class="jld-grid2 {if([$configs.jld_author.value]==0)}jld-hide{/if}" id="jldAuthorFields">
+                                                    <div class="jld-field">
+                                                        <label class="jld-label">默认作者</label>
+                                                        <input type="text" name="jld_author_name" value="{$configs.jld_author_name.value}" placeholder="请输入默认作者" class="jld-control">
+                                                    </div>
+                                                    <div class="jld-field">
+                                                        <label class="jld-label">作者链接</label>
+                                                        <input type="text" name="jld_author_url" value="{$configs.jld_author_url.value}" placeholder="请输入作者主页链接" class="jld-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="jld-col">
+                                        <div class="jld-card">
+                                            <div class="jld-card-head">知识图谱</div>
+                                            <div class="jld-card-body">
+                                                <p class="jld-desc">知识图谱是谷歌及其服务所使用的一个知识库，用于提升其搜索引擎的结果。</p>
+                                                <div class="jld-field">
+                                                    <label class="jld-label">数据类型</label>
+                                                    <div class="jld-radios">
+                                                        <label><input type="radio" name="jld_dtype" value="0" {if([$configs.jld_dtype.value]==0)} checked="checked" {/if}> 无</label>
+                                                        <label><input type="radio" name="jld_dtype" value="1" {if([$configs.jld_dtype.value]==1)} checked="checked" {/if}> 组织机构</label>
+                                                        <label><input type="radio" name="jld_dtype" value="2" {if([$configs.jld_dtype.value]==2)} checked="checked" {/if}> 个人</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="jld-group {if([$configs.jld_dtype.value]!=1)}jld-hide{/if}" id="jldOrgGroup">
+                                                    <div class="jld-grid2">
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">组织类型</label>
+                                                            <select name="jld_org_type" class="jld-control">{$jld_org_type_options}</select>
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">组织名称</label>
+                                                            <input type="text" name="jld_org_name" value="{$configs.jld_org_name.value}" placeholder="{$jld_site_title}" class="jld-control">
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">组织法定名称</label>
+                                                            <input type="text" name="jld_org_legal" value="{$configs.jld_org_legal.value}" placeholder="请输入组织法定名称" class="jld-control">
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">组织网址</label>
+                                                            <input type="text" name="jld_org_url" value="{$configs.jld_org_url.value}" placeholder="{$jld_site_url}" class="jld-control">
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">联系类型</label>
+                                                            <select name="jld_contact_type" class="jld-control">{$jld_contact_type_options}</select>
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">联系号码</label>
+                                                            <input type="text" name="jld_contact_phone" value="{$configs.jld_contact_phone.value}" placeholder="留空则使用公司联系电话" class="jld-control">
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">联系网址</label>
+                                                            <input type="text" name="jld_contact_url" value="{$configs.jld_contact_url.value}" placeholder="请输入联系网址" class="jld-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="jld-field">
+                                                        <label class="jld-label">标识图片</label>
+                                                        <div class="jld-upload-tile">
+                                                            <input type="text" name="jld_logo" id="jld_logo" value="{$configs.jld_logo.value}" class="jld-hidden">
+                                                            <button type="button" class="upload jld-upload-box" data-des="jld_logo"><span class="jld-plus">+</span><span>上传</span></button>
+                                                            <div class="pic jld-pic" id="jld_logo_box">{if(@[$configs.jld_logo.value])}<dl><dt><img src="{SITE_DIR}{$configs.jld_logo.value}" data-url="{$configs.jld_logo.value}"></dt><dd>删除</dd></dl>{/if}</div>
+                                                        </div>
+                                                        <div class="jld-hint">用于搜索结果与知识面板展示，建议使用正方形图片。</div>
+                                                    </div>
+
+                                                    <div class="jld-group {if([$configs.jld_org_type.value]!='LocalBusiness')}jld-hide{/if}" id="jldLocalGroup">
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">营业日</label>
+                                                            <div class="jld-days">{$jld_open_days_checkbox}</div>
+                                                        </div>
+                                                        <div class="jld-grid2">
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">开始时间</label>
+                                                                <input type="time" name="jld_open_start" value="{$configs.jld_open_start.value}" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">结束时间</label>
+                                                                <input type="time" name="jld_open_end" value="{$configs.jld_open_end.value}" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">价格范围</label>
+                                                                <input type="text" name="jld_price" value="{$configs.jld_price.value}" placeholder="如 100-500" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">纬度</label>
+                                                                <input type="text" name="jld_geo_lat" value="{$configs.jld_geo_lat.value}" placeholder="如 39.9042" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">经度</label>
+                                                                <input type="text" name="jld_geo_lng" value="{$configs.jld_geo_lng.value}" placeholder="如 116.4074" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">街道地址</label>
+                                                                <input type="text" name="jld_street" value="{$configs.jld_street.value}" placeholder="请输入街道地址" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">城市</label>
+                                                                <input type="text" name="jld_city" value="{$configs.jld_city.value}" placeholder="请输入城市" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">省份</label>
+                                                                <input type="text" name="jld_region" value="{$configs.jld_region.value}" placeholder="请输入省份" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">邮政编码</label>
+                                                                <input type="text" name="jld_zip" value="{$configs.jld_zip.value}" placeholder="请输入邮政编码" class="jld-control">
+                                                            </div>
+                                                            <div class="jld-field">
+                                                                <label class="jld-label">国家</label>
+                                                                <input type="text" name="jld_country" value="{$configs.jld_country.value}" placeholder="如 CN" class="jld-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="jld-group {if([$configs.jld_dtype.value]!=2)}jld-hide{/if}" id="jldPersonGroup">
+                                                    <div class="jld-grid2">
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">个人名称</label>
+                                                            <input type="text" name="jld_person_name" value="{$configs.jld_person_name.value}" placeholder="{$jld_site_title}" class="jld-control">
+                                                        </div>
+                                                        <div class="jld-field">
+                                                            <label class="jld-label">职位名称</label>
+                                                            <input type="text" name="jld_person_job" value="{$configs.jld_person_job.value}" placeholder="请输入职位名称" class="jld-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="jld-field">
+                                                        <label class="jld-label">个人图片</label>
+                                                        <div class="jld-upload-tile">
+                                                            <input type="text" name="jld_person_image" id="jld_person_image" value="{$configs.jld_person_image.value}" class="jld-hidden">
+                                                            <button type="button" class="upload jld-upload-box" data-des="jld_person_image"><span class="jld-plus">+</span><span>上传</span></button>
+                                                            <div class="pic jld-pic" id="jld_person_image_box">{if(@[$configs.jld_person_image.value])}<dl><dt><img src="{SITE_DIR}{$configs.jld_person_image.value}" data-url="{$configs.jld_person_image.value}"></dt><dd>删除</dd></dl>{/if}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="jld-field">
+                                                    <label class="jld-label">社交资料 <span class="jld-label-aux">Social Profiles</span></label>
+                                                    <div id="jldSocialList">{$jld_social_rows}</div>
+                                                    <div><button type="button" class="jld-link-btn" id="jldAddSocial">添加社交资料</button></div>
+                                                    <div class="jld-hint">添加您的社交资料，谷歌将在知识图谱中自动抓取。</div>
+                                                    <div id="jldSocialTpl" class="jld-hidden"><div class="jld-social-row"><input type="text" name="jld_social[]" value="" placeholder="https://..."><button type="button" class="jld-row-del" title="删除">×</button></div></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="jld-card">
+                                    <div class="jld-card-head">模型数据结构</div>
+                                    <div class="jld-card-body">
+                                        {$jld_module_rows}
+                                    </div>
+                                </div>
+
+                                <div class="jld-card">
+                                    <div class="jld-card-head jld-card-head-flex">
+                                        <span>特定分类数据结构</span>
+                                        <button type="button" class="jld-link-btn" id="jldAddCategory">添加分类</button>
+                                    </div>
+                                    <div class="jld-card-body">
+                                        <div id="jldCategoryList">{$jld_category_rows}</div>
+                                        <div id="jldCategoryTpl" class="jld-hidden">{$jld_category_row_tpl}</div>
+                                        <div class="jld-hint">为特定分类指定结构化数据类型，优先于上方的模型设置。</div>
+                                    </div>
+                                </div>
+
+                                <div class="jld-card">
+                                    <div class="jld-card-head">默认数据</div>
+                                    <div class="jld-card-body">
+                                        <div class="jld-field">
+                                            <label class="jld-label">默认图片</label>
+                                            <div class="jld-upload-tile">
+                                                <input type="text" name="jld_image" id="jld_image" value="{$configs.jld_image.value}" class="jld-hidden">
+                                                <button type="button" class="upload jld-upload-box" data-des="jld_image"><span class="jld-plus">+</span><span>上传</span></button>
+                                                <div class="pic jld-pic" id="jld_image_box">{if(@[$configs.jld_image.value])}<dl><dt><img src="{SITE_DIR}{$configs.jld_image.value}" data-url="{$configs.jld_image.value}"></dt><dd>删除</dd></dl>{/if}</div>
+                                            </div>
+                                            <div class="jld-hint">根据谷歌验证工具，图片尺寸必须大于或等于 1200*728。</div>
+                                        </div>
+                                        <div class="jld-field">
+                                            <label class="jld-label">默认品牌</label>
+                                            <input type="text" name="jld_brand" value="{$configs.jld_brand.value}" placeholder="请输入" class="jld-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="jld-actions">
+                                <button type="reset" class="jld-btn">重置</button>
+                                <button type="submit" name="submit" value="jsonld" class="jld-btn jld-btn-primary">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="layui-tab-item">
+                    <form action="{url./admin/Config/index}" method="post" class="layui-form eko-ajax" data-after="reload">
+                        <input type="hidden" name="formcheck" value="{$formcheck}" >
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">功能状态</label>
+		                     <div class="layui-input-block">
+							<input type="radio" name="llms_open" value="1" {if([$configs.llms_open.value]==1)} checked="checked" {/if} title="开启">
+								<input type="radio" name="llms_open" value="0" {if([$configs.llms_open.value]!=1)} checked="checked" {/if} title="关闭">
+							<span class="layui-icon layui-icon-about tips" data-content="开启后可访问 {$llms_url} ，内容随栏目与文章实时生成，无需手工维护文件；关闭时该地址返回404。llms.txt 目前是社区提案而非标准，各AI厂商均未承诺抓取，属低成本前瞻性适配，不替代 robots.txt 与 sitemap.xml，也不是搜索排名信号。"></span>
+		                     </div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">输出范围</label>
+		                     <div class="layui-input-block">
+							<input type="checkbox" name="llms_inc_about" value="1" lay-skin="primary" {if([$configs.llms_inc_about.value]!=0)} checked="checked" {/if} title="单页栏目">
+							<input type="checkbox" name="llms_inc_list" value="1" lay-skin="primary" {if([$configs.llms_inc_list.value]!=0)} checked="checked" {/if} title="列表栏目">
+							<input type="checkbox" name="llms_inc_content" value="1" lay-skin="primary" {if([$configs.llms_inc_content.value]!=0)} checked="checked" {/if} title="栏目下内容">
+		                     </div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">每栏目条数</label>
+		                     <div class="layui-input-inline">
+							<input type="text" name="llms_sort_num" value="{$configs.llms_sort_num.value}" placeholder="默认20" class="layui-input">
+		                     </div>
+		                     <div class="layui-form-mid layui-word-aux">条，1-500，超出范围按20处理</div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">说明文字</label>
+		                     <div class="layui-input-block">
+							<input type="radio" name="llms_desc_source" value="description" {if([$configs.llms_desc_source.value]!='none')} checked="checked" {/if} title="取栏目/内容描述">
+								<input type="radio" name="llms_desc_source" value="none" {if([$configs.llms_desc_source.value]=='none')} checked="checked" {/if} title="不输出说明">
+							<span class="layui-icon layui-icon-about tips" data-content="说明取自栏目描述与内容描述，会自动去除HTML并压成单行；描述为空时该条链接不输出说明部分。"></span>
+		                     </div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">说明截断</label>
+		                     <div class="layui-input-inline">
+							<input type="text" name="llms_desc_len" value="{$configs.llms_desc_len.value}" placeholder="默认100" class="layui-input">
+		                     </div>
+		                     <div class="layui-form-mid layui-word-aux">字，1-500，超出范围按100处理</div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">附带站点地图</label>
+		                     <div class="layui-input-block">
+							<input type="radio" name="llms_with_sitemap" value="1" {if([$configs.llms_with_sitemap.value]!=0)} checked="checked" {/if} title="附带">
+								<input type="radio" name="llms_with_sitemap" value="0" {if([$configs.llms_with_sitemap.value]==0)} checked="checked" {/if} title="不附带">
+							<span class="layui-icon layui-icon-about tips" data-content="附带时会在 ## Optional 段输出 sitemap.xml 地址！"></span>
+		                     </div>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">补充说明</label>
+		                     <div class="layui-input-inline" style="width:480px;">
+							<textarea name="llms_intro" maxlength="190" placeholder="输出在站点标题与分段之间，一句话介绍站点定位，190字以内" class="layui-textarea">{$configs.llms_intro.value}</textarea>
+		                     </div>
+		                     <span class="layui-icon layui-icon-about tips" data-content="配置存放于ay_config表，字段长度限制190字，超出部分会被自动截断！"></span>
+		                </div>
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">Optional段栏目</label>
+		                     <div class="layui-input-block">
+							{$llms_sort_checkbox}
+							<div class="layui-word-aux" style="line-height:1.8;padding-top:6px;">
+								按规范语义，此处勾选的栏目将单独输出到 ## Optional 段，表示上下文不足时可优先跳过的次要页面，如下载、联系方式、法律条款等。仅显示当前区域栏目，其它区域的选择不受影响。跨区域合计受配置项长度限制，超出时将拒绝保存并提示，不会静默丢弃勾选。
+							</div>
+		                     </div>
+		                </div>
+
+		                <div class="layui-form-item">
+							 <div class="layui-input-block">
+							    <button class="layui-btn" lay-submit name="submit" value="llms">立即提交</button>
+							    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							 </div>
+						</div>
+	              </form>
+                </div>
+
+		  	   <div class="layui-tab-item">
+		  	   	   <form action="{url./admin/Config/index}" method="post" class="layui-form eko-ajax" data-after="reload">
+			  	   	   <input type="hidden" name="formcheck" value="{$formcheck}" >
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">地址模式</label>
+		                     <div class="layui-input-block">
+		                     	<P>
+		                     		<input type="radio" name="url_rule_type" value="2" {if([$configs.url_rule_type.value]==2)} checked="checked" {/if} title="伪静态模式，类似：/product/1.html">
+		                     		<span class="layui-icon layui-icon-about tips" data-content="伪静态时需要服务器环境的支持，并需要添加伪静态规则！"></span>
+								</P>
+		                     	<P>
+									<input type="radio" name="url_rule_type" value="3" {if([$configs.url_rule_type.value]==3||![$configs.url_rule_type.value])} checked="checked" {/if} title="兼容模式，首页/index.php也可正常访问，类似：/?product/1.html">
+								</P>
+		                     </div>
+		                </div>
+
+
+		                <div class="layui-form-item">
+		                     <label class="layui-form-label">文章路径</label>
+		                     <div class="layui-input-block">
+		                     	<P>
+		                     		<input type="radio" name="url_rule_content_path" value="0" {if(![$configs.url_rule_content_path.value])} checked="checked" {/if} title="带栏目路径，类似：/product/1.html">
+								</P>
+		                     	<P>
+									<input type="radio" name="url_rule_content_path" value="1" {if([$configs.url_rule_content_path.value]==1)} checked="checked" {/if} title="不带栏目路径，类似：/1.html">
+								</P>
+		                     </div>
+		                </div>
+
+					   <div class="layui-form-item">
+						   <label class="layui-form-label">跳转404</label>
+						   <div class="layui-input-block">
+							   <P>
+								   <input type="radio" name="url_index_404" value="1" {if([$configs.url_index_404.value]==1)} checked="checked" {/if}  title="开启404">
+								   <span class="layui-icon layui-icon-about tips" data-content="开启后访问不存在的页面直接返回404"></span>
+							   </P>
+							   <P>
+								   <input type="radio" name="url_index_404" value="0" {{if(![$configs.url_index_404.value])} checked="checked" {/if} title="关闭404(默认)">
+							   </P>
+						   </div>
+					   </div>
+
+		                <div class="layui-form-item">
+							 <div class="layui-input-block">
+							    <button class="layui-btn" lay-submit name="submit" value="urlrule">立即提交</button>
+							    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							 </div>
+						</div>
+	              </form>
+		  	   </div>
+
+		  	   <div class="layui-tab-item">
+		  	   	   <form action="{url./admin/Config/index}" method="post" class="layui-form eko-ajax" data-after="reload">
+			  	   	   <input type="hidden" name="formcheck" value="{$formcheck}" >
+
+	                  <div class="layui-form-item">
+		                   <label class="layui-form-label">常用组合标签： </label>
+		                   <div class="layui-input-block" style="line-height:36px;">
+								<p>全局标签：{eko:sitetitle}站点标题、{eko:sitesubtitle}站点副标题</p>
+								<p>列表或内容页：{sort:name}栏目名称、{sort:title}栏目标题</p>
+								<p>内容页：{content:title}内容标题</p>
+								<p>搜索结果页：{eko:keyword}搜索关键字</p>
+								<p>个人中心：{user:nickname}会员昵称</p>
+								<p>例如定义内容页样式：{content:title}-{sort:name}-{eko:sitetitle}-{eko:sitesubtitle}</p>
+								<p>以下配置参数不设置时将使用系统默认规则。</p>
+		                   </div>
+		              </div>
+
+		               <div class="layui-form-item">
+		                   <label class="layui-form-label">首页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="index_title" value="{$configs.index_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">专题页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="about_title" value="{$configs.about_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">列表页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="list_title" value="{$configs.list_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">内容页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="content_title" value="{$configs.content_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">搜索结果页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="search_title" value="{$configs.search_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">会员注册页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="register_title" value="{$configs.register_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">会员登录页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="login_title" value="{$configs.login_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">个人中心页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="ucenter_title" value="{$configs.ucenter_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">资料修改页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="umodify_title" value="{$configs.umodify_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+			           <div class="layui-form-item">
+		                   <label class="layui-form-label">其它页</label>
+		                   <div class="layui-input-block">
+		                  		<input type="text" name="other_title" value="{$configs.other_title.value}" class="layui-input">
+		                   </div>
+			           </div>
+
+		                <div class="layui-form-item">
+							 <div class="layui-input-block">
+							    <button class="layui-btn" lay-submit name="submit" value="pagetitle">立即提交</button>
+							    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							 </div>
+						</div>
+	              </form>
+		  	   </div>
+		  </div>
+	 </div>
+</div>
+<style>
+.jld-form { margin: 0; }
+.jld-page { background: #f5f6f7; margin: -10px; padding: 18px 20px 28px; }
+.jld-title { font-size: 18px; font-weight: 600; color: #1f2329; margin: 2px 0 14px; }
+.jld-tips { background: #e8f3ff; border-radius: 4px; padding: 10px 16px; font-size: 13px; line-height: 1.9; color: #1d2129; margin-bottom: 18px; }
+.jld-tips p { margin: 0; }
+.jld-tips a { color: #1664ff; text-decoration: none; word-break: break-all; }
+.jld-cols { display: flex; gap: 16px; align-items: flex-start; }
+.jld-col { flex: 1; min-width: 0; }
+.jld-card { background: #fff; border-radius: 8px; padding: 18px 22px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(15, 23, 42, .06); }
+.jld-card-head { font-size: 15px; font-weight: 600; color: #1f2329; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; margin-bottom: 16px; }
+.jld-card-head-flex { display: flex; justify-content: space-between; align-items: center; }
+.jld-field { margin-bottom: 16px; }
+.jld-field:last-child { margin-bottom: 0; }
+.jld-label { display: block; font-size: 13px; color: #1f2329; margin-bottom: 8px; }
+.jld-label-aux { color: #86909c; font-size: 12px; margin-left: 4px; }
+.jld-control { width: 100%; height: 34px; line-height: 34px; padding: 0 10px; font-size: 13px; color: #1f2329; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff; box-sizing: border-box; outline: none; }
+select.jld-control { padding-right: 26px; }
+.jld-control:focus { border-color: #1664ff; }
+.jld-radios { display: flex; gap: 22px; align-items: center; min-height: 34px; }
+.jld-radios label, .jld-check, .jld-day { font-weight: 400; font-size: 13px; color: #1f2329; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.jld-radios input, .jld-check input, .jld-day input { accent-color: #111; width: 14px; height: 14px; margin: 0; }
+.jld-checks { display: flex; flex-direction: column; gap: 12px; }
+.jld-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.jld-group { margin-top: 2px; }
+.jld-hide { display: none !important; }
+.jld-desc { font-size: 12px; color: #86909c; line-height: 1.8; margin: 0 0 14px; }
+.jld-hint { font-size: 12px; color: #86909c; line-height: 1.7; margin-top: 6px; }
+.jld-link-btn { padding: 0; border: 0; background: none; color: #1664ff; font-size: 13px; cursor: pointer; margin: 8px 0 0; }
+.jld-link-btn:hover { color: #0e4fd1; }
+.jld-social-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.jld-social-row input { flex: 1; height: 34px; padding: 0 10px; font-size: 13px; border: 1px solid #d9d9d9; border-radius: 6px; outline: none; box-sizing: border-box; }
+.jld-social-row input:focus { border-color: #1664ff; }
+.jld-row-del { width: 26px; height: 26px; flex: none; border: 0; background: #f2f3f5; color: #86909c; border-radius: 50%; cursor: pointer; font-size: 16px; line-height: 1; }
+.jld-row-del:hover { background: #ffece8; color: #f53f3f; }
+.jld-module-row { padding: 4px 0 16px; }
+.jld-module-name { font-size: 13px; color: #1f2329; margin-bottom: 10px; }
+.jld-module-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.jld-subfield label { display: block; font-size: 12px; color: #86909c; margin-bottom: 6px; }
+.jld-subfield select { width: 100%; height: 34px; padding: 0 8px; font-size: 13px; color: #1f2329; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff; box-sizing: border-box; outline: none; }
+.jld-subfield select:focus { border-color: #1664ff; }
+.jld-cat-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr 30px; gap: 0 12px; align-items: end; margin-bottom: 10px; }
+.jld-cat-row .jld-row-del { margin-bottom: 4px; }
+.jld-upload-tile { display: flex; gap: 12px; align-items: flex-start; }
+.jld-hidden { display: none !important; }
+.jld-upload-box { width: 84px; height: 84px; flex: none; border: 1px dashed #d9d9d9; border-radius: 6px; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #86909c; font-size: 12px; cursor: pointer; line-height: 1; }
+.jld-upload-box:hover { border-color: #1664ff; color: #1664ff; }
+.jld-plus { font-size: 20px; line-height: 1; }
+.pic.jld-pic { margin: 0; width: 84px; height: 84px; overflow: hidden; border-radius: 6px; position: relative; border: 1px solid #f0f0f0; background: #fafafa; }
+.jld-pic dl { float: none; position: relative; width: 100%; height: 100%; margin: 0; }
+.jld-pic dt { width: 100%; height: 100%; }
+.jld-pic img { width: 100%; height: 100%; object-fit: cover; margin: 0; padding: 0; border: 0; border-radius: 0; max-height: none; }
+.jld-pic dl dd { right: 4px; top: 4px; width: 18px; height: 18px; font-size: 12px; line-height: 18px; }
+.jld-days { display: flex; flex-wrap: wrap; gap: 10px 16px; min-height: 24px; }
+.jld-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 4px; }
+.jld-btn { height: 36px; padding: 0 24px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff; color: #1f2329; font-size: 14px; cursor: pointer; }
+.jld-btn-primary { background: #1f1f1f; border-color: #1f1f1f; color: #fff; }
+.jld-btn-primary:hover { background: #333; }
+@media (max-width: 1100px) { .jld-cols { flex-direction: column; } .jld-col { width: 100%; } }
+</style>
+<script>
+(function(){
+	var openRadios = document.querySelectorAll('input[name="jld_open"]');
+	var main = document.getElementById('jldMain');
+	function toggleOpen(){
+		if(!main) return;
+		var open = document.querySelector('input[name="jld_open"]:checked');
+		main.classList.toggle('jld-hide', !open || open.value !== '1');
+	}
+	for(var i = 0; i < openRadios.length; i++){
+		openRadios[i].addEventListener('change', toggleOpen);
+	}
+
+	var dtypeRadios = document.querySelectorAll('input[name="jld_dtype"]');
+	var orgGroup = document.getElementById('jldOrgGroup');
+	var personGroup = document.getElementById('jldPersonGroup');
+	function toggleDtype(){
+		var checked = document.querySelector('input[name="jld_dtype"]:checked');
+		var value = checked ? checked.value : '0';
+		if(orgGroup) orgGroup.classList.toggle('jld-hide', value !== '1');
+		if(personGroup) personGroup.classList.toggle('jld-hide', value !== '2');
+	}
+	for(var j = 0; j < dtypeRadios.length; j++){
+		dtypeRadios[j].addEventListener('change', toggleDtype);
+	}
+
+	var orgType = document.querySelector('select[name="jld_org_type"]');
+	var localGroup = document.getElementById('jldLocalGroup');
+	function toggleLocal(){
+		if(!localGroup || !orgType) return;
+		localGroup.classList.toggle('jld-hide', orgType.value !== 'LocalBusiness');
+	}
+	if(orgType) orgType.addEventListener('change', toggleLocal);
+
+	var authorSwitch = document.getElementById('jldAuthorSwitch');
+	var authorFields = document.getElementById('jldAuthorFields');
+	function toggleAuthor(){
+		if(!authorFields || !authorSwitch) return;
+		authorFields.classList.toggle('jld-hide', !authorSwitch.checked);
+	}
+	if(authorSwitch) authorSwitch.addEventListener('change', toggleAuthor);
+
+	// 添加/删除社交资料
+	var socialList = document.getElementById('jldSocialList');
+	var socialTpl = document.getElementById('jldSocialTpl');
+	var addSocial = document.getElementById('jldAddSocial');
+	if(addSocial) addSocial.onclick = function(){
+		if(!socialList || !socialTpl) return;
+		socialList.appendChild(socialTpl.firstElementChild.cloneNode(true));
+	};
+
+	// 添加/删除特定分类
+	var catList = document.getElementById('jldCategoryList');
+	var catTpl = document.getElementById('jldCategoryTpl');
+	var addCat = document.getElementById('jldAddCategory');
+	if(addCat) addCat.onclick = function(){
+		if(!catList || !catTpl) return;
+		catList.appendChild(catTpl.firstElementChild.cloneNode(true));
+	};
+
+	document.addEventListener('click', function(e){
+		var btn = e.target;
+		if(!btn || !btn.classList || !btn.classList.contains('jld-row-del')) return;
+		var row = btn.parentNode;
+		if(row && row.parentNode) row.parentNode.removeChild(row);
+	});
+
+	// 上传图片预览与上传框切换
+	function syncTile(tile){
+		var box = tile.querySelector('.jld-pic');
+		var upload = tile.querySelector('.jld-upload-box');
+		if(!box || !upload) return;
+		var has = !!box.querySelector('img');
+		box.style.display = has ? 'block' : 'none';
+		upload.style.display = has ? 'none' : 'flex';
+	}
+	var tiles = document.querySelectorAll('.jld-upload-tile');
+	for(var k = 0; k < tiles.length; k++){
+		(function(tile){
+			syncTile(tile);
+			var box = tile.querySelector('.jld-pic');
+			if(box && window.MutationObserver){
+				new MutationObserver(function(){ syncTile(tile); }).observe(box, { childList: true, subtree: true });
+			}
+		})(tiles[k]);
+	}
+})();
+</script>
+<script>
+(function(){
+	var btn = document.getElementById('indexnowKeyBtn');
+	var input = document.getElementById('indexnow_key');
+	var loc = document.getElementById('indexnow_key_location');
+	if(!btn || !input) return;
+	btn.onclick = function(){
+		if(input.value && !confirm('重新生成密钥后需再次提交；若已填写密钥文件地址，提交后将自动清空并改用根目录密钥文件，确定继续么？')) return;
+		var key = '';
+		if(window.crypto && window.crypto.getRandomValues){
+			var bytes = new Uint8Array(16);
+			window.crypto.getRandomValues(bytes);
+			for(var i=0;i<bytes.length;i++){
+				key += ('0' + bytes[i].toString(16)).slice(-2);
+			}
+		}else{
+			for(var j=0;j<32;j++){
+				key += Math.floor(Math.random()*16).toString(16);
+			}
+		}
+		input.value = key;
+		if(loc) loc.value = '';
+	};
+})();
+</script>
+{include file='common/foot.html'}

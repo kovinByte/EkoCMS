@@ -1,0 +1,342 @@
+<?php
+/**
+ *  单页内容控制器
+ */
+namespace app\admin\controller\content;
+
+use core\basic\Controller;
+use app\admin\model\content\SingleModel;
+
+class SingleController extends Controller
+{
+
+    private $model;
+
+    private $blank;
+
+    public function __construct()
+    {
+        $this->model = new SingleModel();
+    }
+
+    // 单页内容列表
+    public function index()
+    {
+        if ((! ! $id = get('id', 'int')) && $result = $this->model->getSingle($id)) {
+            $this->assign('more', true);
+            $this->assign('content', $result);
+        } else {
+            $this->assign('list', true);
+            if (! $mcode = get('mcode', 'var')) {
+                error('传递的模型编码参数有误，请核对后重试！');
+            }
+
+            if (! ! ($field = get('field', 'var')) && ! ! ($keyword = get('keyword', 'vars'))) {
+                $result = $this->model->findSingle($mcode, $field, $keyword);
+            } else {
+                $result = $this->model->getList($mcode);
+            }
+            $this->assign('baidu_zz_token', $this->config('baidu_zz_token'));
+            $this->assign('baidu_ks_token', $this->config('baidu_ks_token'));
+            $this->assign('indexnow_key', get_effective_indexnow_key($this->config('indexnow_key'), $this->config('indexnow_key_location')));
+
+            // 模型名称
+            $this->assign('model_name', model('admin.content.Model')->getName($mcode));
+            
+            // 前端地址连接符判断
+            $url_break_char = $this->config('url_break_char') ?: '_';
+            $this->assign('url_break_char', $url_break_char);
+            
+            $this->assign('contents', $result);
+        }
+        $this->display('content/single.html');
+    }
+
+    // 单页内容删除
+    public function del()
+    {
+        $back = admin_stay_target(url('/admin/Single/index'));
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error('请使用正确方式提交！', $back);
+        }
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', $back);
+        }
+
+        if ($this->model->delSingle($id)) {
+            $this->log('删除单页内容' . $id . '成功！');
+            success('删除成功！', $back);
+        } else {
+            $this->log('删除单页内容' . $id . '失败！');
+            error('删除失败！', $back);
+        }
+    }
+
+    // 单页内容修改
+    public function mod()
+    {
+        // 前端地址连接符判断
+        if (get('baiduzz') || get('baiduks') || get('indexnow')) {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                error('请使用正确方式提交！', url('/admin/Single/index'));
+            }
+            $url_break_char = $this->config('url_break_char') ?: '_';
+            $url_rule_sort_suffix = $this->config('url_rule_sort_suffix') ? true : false;
+        }
+        
+        // 站长普通推送
+        if (! ! $id = get('baiduzz')) {
+            $domain = get_http_url();
+            if (! $token = $this->config('baidu_zz_token')) {
+                alert_back('请先到系统配置中填写百度普通收录推送token值！');
+            }
+            
+            $api = "http://data.zz.baidu.com/urls?site=$domain&token=$token";
+            $data = $this->model->getSingle($id);
+            $data->urlname = $data->urlname ?: 'about';
+            if ($data->outlink) {
+                alert_back('链接类型不允许推送！');
+            }
+            if ($data->filename) {
+                $urls[] = $domain . homeurl('/home/Index/' . $data->filename, $url_rule_sort_suffix);
+            } else {
+                $urls[] = $domain . homeurl('/home/Index/' . $data->urlname . $url_break_char . $data->scode, $url_rule_sort_suffix);
+            }
+            $result = post_baidu($api, $urls);
+            if (isset($result->error)) {
+                $this->log('百度普通收录推送失败：' . $urls[0]);
+                alert_back('推送发生错误：' . $result->message);
+            } elseif (isset($result->success)) {
+                $this->log('百度普通收录推送成功：' . $urls[0]);
+                $okMsg = '成功推送' . $result->success . '条，今天剩余可推送' . $result->remain . '条数!';
+                alert_back($okMsg, 1);
+            } else {
+                alert_back('发生未知错误！');
+            }
+        }
+        
+        // 站长快速推送
+        if (! ! $id = get('baiduks')) {
+            $domain = get_http_url();
+            if (! $token = $this->config('baidu_ks_token')) {
+                alert_back('请先到系统配置中填写百度快速收录推送token值！');
+            }
+            
+            $api = "http://data.zz.baidu.com/urls?site=$domain&token=$token&type=daily";
+            $data = $this->model->getSingle($id);
+            $data->urlname = $data->urlname ?: 'about';
+            if ($data->outlink) {
+                alert_back('链接类型不允许推送！');
+            }
+            if ($data->filename) {
+                $urls[] = $domain . homeurl('/home/Index/' . $data->filename, $url_rule_sort_suffix);
+            } else {
+                $urls[] = $domain . homeurl('/home/Index/' . $data->urlname . $url_break_char . $data->scode, $url_rule_sort_suffix);
+            }
+            $result = post_baidu($api, $urls);
+            if (isset($result->error)) {
+                $this->log('百度快速收录推送失败：' . $urls[0]);
+                alert_back('推送发生错误：' . $result->message);
+            } elseif (isset($result->success_daily)) {
+                $this->log('百度快速收录推送成功：' . $urls[0]);
+                $okMsg = '成功推送' . $result->success_daily . '条，今天剩余可推送' . $result->remain_daily . '条数!';
+                alert_back($okMsg, 1);
+            } else {
+                alert_back('发生未知错误！');
+            }
+        }
+        
+        // IndexNow推送
+        if (! ! $id = get('indexnow', 'int')) {
+            $urls = array();
+            if (! $key = get_effective_indexnow_key($this->config('indexnow_key'), $this->config('indexnow_key_location'))) {
+                alert_back('请先到系统配置中填写IndexNow推送密钥！');
+            }
+
+            $domain = get_http_url();
+            $expected_host = get_http_host(true);
+            $data = $this->model->getSingle($id);
+            if (! is_object($data)) {
+                alert_back('要推送的单页内容不存在！');
+                return;
+            }
+            $data->urlname = $data->urlname ?: 'about';
+            if ($data->outlink) {
+                alert_back('链接类型不允许推送！');
+            }
+            if ($data->filename) {
+                $urls[] = build_indexnow_url($domain, homeurl('/home/Index/' . $data->filename, $url_rule_sort_suffix));
+            } else {
+                $urls[] = build_indexnow_url($domain, homeurl('/home/Index/' . $data->urlname . $url_break_char . $data->scode, $url_rule_sort_suffix));
+            }
+            $urls = filter_indexnow_urls($urls, $expected_host);
+            if (! $urls) {
+                alert_back('没有可推送的本站地址！');
+            }
+
+            $key_location = resolve_indexnow_key_location($key, $this->config('indexnow_key_location'), $urls);
+            if (! indexnow_key_location_file_ready($key, $key_location)) {
+                alert_back('密钥文件不存在或内容与推送密钥不一致，请先到系统配置保存IndexNow密钥，并检查网站根目录（或自定义密钥文件地址）写入权限！');
+            }
+            $rs = post_indexnow($key, $key_location, $urls, $expected_host);
+            $msg = get_indexnow_msg($rs, count($urls));
+            $this->log('IndexNow推送：' . $urls[0]);
+            $pushOk = (! $rs['errno'] && ($rs['code'] == 200 || $rs['code'] == 202));
+            if ($pushOk) {
+                $this->log('IndexNow推送成功：' . $msg);
+            } else {
+                $this->log('IndexNow推送失败：' . $msg);
+            }
+            alert_back($msg, $pushOk ? 1 : 0);
+        }
+
+        if (! $id = get('id', 'int')) {
+            error('传递的参数值错误！', url('/admin/Single/index'));
+        }
+        
+        // 单独修改状态
+        $posted = admin_posted_field(array('status'), function () use ($id) {
+            return admin_stay_target(admin_model_list_fallback($id, true));
+        });
+        if ($posted) {
+            $listUrl = admin_stay_target(admin_model_list_fallback($id, true));
+            if (! $this->model->getSingle($id)) {
+                error('编辑的内容已经不存在！', $listUrl);
+            }
+            if (admin_saved($this->model->modSingle($id, $posted[0] . "='" . $posted[1] . "',update_user='" . session('username') . "'"), true)) {
+                success('修改成功！', $listUrl);
+            } else {
+                error('修改失败！', $listUrl);
+            }
+        }
+        
+        // 修改操作
+        if ($_POST) {
+            
+            // 获取数据
+            $title = post('title');
+            $author = post('author');
+            $source = post('source');
+            $ico = normalize_upload_saved_path(post('ico'));
+            $pics = normalize_upload_saved_paths(post('pics'));
+            $content = normalize_richtext_for_storage(post('content'));
+            $tags = str_replace('，', ',', post('tags'));
+            $titlecolor = post('titlecolor');
+            $subtitle = post('subtitle');
+            $outlink = post('outlink');
+            $date = post('date');
+            $enclosure = normalize_upload_saved_path(post('enclosure'));
+            $keywords = post('keywords');
+            $description = post('description');
+            $status = post('status', 'int');
+            
+            // 获取多图标题
+            $picstitle = post('picstitle');
+            if ($picstitle) {
+                $picstitle = implode(',', $picstitle);
+            }
+            
+            if (! $title) {
+                alert_back('单页内容标题不能为空！');
+            }
+            
+            // 自动提起前一百个字符为描述
+            if (! $description && isset($_POST['content'])) {
+                $description = escape_string(clear_html_blank(substr_both(strip_tags($_POST['content']), 0, 150)));
+            }
+            
+            // 无缩略图时，自动提取文章第一张图为缩略图
+            if (! $ico && preg_match('/<img\s+.*?src=\s?[\'|\"](.*?(\.gif|\.jpg|\.jpeg|\.png|\.webp))[\'|\"].*?[\/]?>/i', decode_string($content), $srcs) && isset($srcs[1])) {
+                $ico = $srcs[1];
+            }
+            
+            // 缩放缩略图
+            if ($ico) {
+                resize_img(ROOT_PATH . $ico, '', $this->config('ico.max_width'), $this->config('ico.max_height'));
+            }
+            
+            // 构建数据
+            $data = array(
+                'title' => $title,
+                'content' => $content,
+                'tags' => $tags,
+                'author' => $author,
+                'source' => $source,
+                'ico' => $ico,
+                'pics' => $pics,
+                'picstitle' => $picstitle,
+                'titlecolor' => $titlecolor,
+                'subtitle' => $subtitle,
+                'outlink' => $outlink,
+                'date' => $date,
+                'enclosure' => $enclosure,
+                'keywords' => $keywords,
+                'description' => clear_html_blank($description),
+                'status' => $status,
+                'update_user' => session('username')
+            );
+            
+            // 执行添加
+            $singleBack = admin_back_target(admin_model_list_fallback($id, true));
+            if (! $this->model->getSingle($id)) {
+                error('编辑的内容已经不存在！', $singleBack);
+            }
+            if ($this->model->modSingle($id, $data)) {
+                
+                // 扩展内容修改
+                foreach ($_POST as $key => $value) {
+                    if (preg_match('/^ext_[\w\-]+$/', $key)) {
+                        $temp = post($key);
+                        if (is_array($temp)) {
+                            $data2[$key] = implode(',', $temp);
+                        } else {
+                            $data2[$key] = str_replace("\r\n", '<br>', normalize_richtext_for_storage($temp));
+                        }
+                    }
+                }
+                if (isset($data2)) {
+                    if ($this->model->findContentExt($id)) {
+                        $this->model->modContentExt($id, $data2);
+                    } else {
+                        $data2['contentid'] = $id;
+                        $this->model->addContentExt($data2);
+                    }
+                }
+                
+                $this->log('修改单页内容' . $id . '成功！');
+                $msg = '修改成功！';
+                $syncHtmls = array($content);
+                if (isset($data2)) {
+                    foreach ($data2 as $__k => $__v) {
+                        if (strpos($__k, 'ext_') === 0 && is_string($__v)) {
+                            $syncHtmls[] = $__v;
+                        }
+                    }
+                }
+                if ($notice = iframe_whitelist_sync_notice_many($syncHtmls, '修改成功！')) {
+                    $msg = $notice;
+                }
+                success($msg, $singleBack);
+            } else {
+                success('修改成功！', $singleBack);
+            }
+        } else {
+            // 调取修改内容
+            $this->assign('mod', true);
+            if (! $result = $this->model->getSingle($id)) {
+                error('编辑的内容已经不存在！', admin_back_target(admin_model_list_fallback($id, true)));
+            }
+            $this->assign('content', $result);
+            
+            // 扩展字段
+            if (! $mcode = get('mcode', 'var')) {
+                error('传递的模型编码参数有误，请核对后重试！');
+            }
+            $this->assign('extfield', model('admin.content.ExtField')->getModelField($mcode));
+
+            $this->assign('ai_show_assistant', '1');
+            
+            $this->display('content/single.html');
+        }
+    }
+}
