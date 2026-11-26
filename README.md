@@ -97,10 +97,10 @@ EkoCMS/
 
 ## 文档
 
-- 官网：[script/official-site/index.html](script/official-site/index.html)
-- 使用方法：[script/official-site/guide.html](script/official-site/guide.html)
-- 更新日志：[script/official-site/changelog.html](script/official-site/changelog.html)
-- 模板开发手册：[script/official-site/manual/index.html](script/official-site/manual/index.html)
+- 官网：[https://ekocms.d50.cn/index.html](https://ekocms.d50.cn/index.html)
+- 使用方法：[https://ekocms.d50.cn/guide.html](https://ekocms.d50.cn/guide.html)
+- 更新日志：[https://ekocms.d50.cn/changelog.html](https://ekocms.d50.cn/changelog.html)
+- 模板开发手册：[https://ekocms.d50.cn/manual/index.html](https://ekocms.d50.cn/manual/index.html)
 
 ## 免费与支持
 
